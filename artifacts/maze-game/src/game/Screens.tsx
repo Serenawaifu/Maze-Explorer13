@@ -170,36 +170,36 @@ function GameButton({ onClick, color, glowColor, children, small, variant = "def
   const isGhost = variant === "ghost";
 
   const bgIdle = isGhost
-    ? "transparent"
+    ? "linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))"
     : isPrimary
-      ? `linear-gradient(135deg, ${color}, ${color}dd)`
+      ? `linear-gradient(160deg, ${color}, ${color}cc, ${color}88)`
       : isDanger
-        ? `linear-gradient(135deg, rgba(180,30,40,0.2), rgba(140,20,30,0.15))`
-        : `linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))`;
+        ? "linear-gradient(160deg, rgba(180,30,40,0.28), rgba(120,15,25,0.18), rgba(80,10,15,0.12))"
+        : "linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))";
 
   const bgHover = isGhost
-    ? "rgba(255,255,255,0.05)"
+    ? "linear-gradient(160deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))"
     : isPrimary
-      ? `linear-gradient(135deg, ${color}ee, ${color})`
+      ? `linear-gradient(160deg, ${color}, ${color}ee, ${color}aa)`
       : isDanger
-        ? `linear-gradient(135deg, rgba(200,40,50,0.35), rgba(160,30,40,0.25))`
-        : `linear-gradient(135deg, ${color}40, ${color}20)`;
+        ? "linear-gradient(160deg, rgba(210,40,55,0.45), rgba(170,30,40,0.3), rgba(130,20,30,0.2))"
+        : `linear-gradient(160deg, ${color}50, ${color}25)`;
 
   const borderIdle = isGhost
-    ? "1px solid rgba(255,255,255,0.08)"
+    ? "1px solid rgba(255,255,255,0.1)"
     : isPrimary
-      ? `1px solid ${glowColor}60`
+      ? `1px solid ${glowColor}70`
       : isDanger
-        ? "1px solid rgba(204,34,51,0.3)"
-        : "1px solid rgba(255,255,255,0.1)";
+        ? "1px solid rgba(204,34,51,0.35)"
+        : "1px solid rgba(255,255,255,0.12)";
 
   const borderHover = isGhost
-    ? "1px solid rgba(255,255,255,0.15)"
+    ? "1px solid rgba(255,255,255,0.22)"
     : isPrimary
-      ? `1px solid ${glowColor}90`
+      ? `1px solid ${glowColor}`
       : isDanger
-        ? "1px solid rgba(204,34,51,0.5)"
-        : `1px solid ${glowColor}50`;
+        ? "1px solid rgba(230,50,65,0.6)"
+        : `1px solid ${glowColor}60`;
 
   return (
     <button
@@ -211,26 +211,41 @@ function GameButton({ onClick, color, glowColor, children, small, variant = "def
       style={{
         position: "relative",
         overflow: "hidden",
-        padding: small ? "10px 20px" : "clamp(12px, 2vh, 16px) clamp(32px, 6vw, 52px)",
-        fontSize: small ? "clamp(10px, 1.5vw, 12px)" : "clamp(12px, 2vw, 15px)",
-        fontWeight: 700,
+        padding: small ? "clamp(10px, 1.5vh, 14px) clamp(22px, 4vw, 32px)" : "clamp(14px, 2.2vh, 18px) clamp(36px, 7vw, 56px)",
+        fontSize: small ? "clamp(11px, 1.6vw, 13px)" : "clamp(13px, 2.2vw, 16px)",
+        fontWeight: 800,
         fontFamily: THEME.fonts.heading,
         border: hovered ? borderHover : borderIdle,
-        borderRadius: 8,
+        borderRadius: 10,
         cursor: "pointer",
         textTransform: "uppercase",
-        letterSpacing: small ? 2 : 3,
+        letterSpacing: small ? 2.5 : 3.5,
         background: hovered ? bgHover : bgIdle,
         color: hovered ? "#fff" : isGhost ? THEME.colors.textDim : THEME.colors.text,
         boxShadow: hovered
-          ? `0 0 24px ${glowColor}40, 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)`
-          : `0 2px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)`,
-        transform: pressed ? "scale(0.97)" : hovered ? "translateY(-2px)" : "translateY(0)",
-        transition: "all 0.25s cubic-bezier(0.2,0.8,0.2,1)",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
+          ? (isDanger
+            ? "0 0 28px rgba(204,34,51,0.35), 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.2)"
+            : `0 0 28px ${glowColor}50, 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.2)`)
+          : `0 2px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.15)`,
+        transform: pressed ? "scale(0.96)" : hovered ? "translateY(-2px)" : "translateY(0)",
+        transition: "all 0.3s cubic-bezier(0.2,0.8,0.2,1)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
       }}
     >
+      {!isGhost && (
+        <span style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "1px",
+          background: isDanger
+            ? "linear-gradient(90deg, transparent 10%, rgba(255,120,120,0.3) 50%, transparent 90%)"
+            : `linear-gradient(90deg, transparent 10%, ${glowColor}50 50%, transparent 90%)`,
+          pointerEvents: "none",
+        }} />
+      )}
       {hovered && (
         <span style={{
           position: "absolute",
@@ -238,7 +253,7 @@ function GameButton({ onClick, color, glowColor, children, small, variant = "def
           left: "-100%",
           width: "60%",
           height: "100%",
-          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)",
+          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
           animation: "btnShine 0.6s ease forwards",
           pointerEvents: "none",
         }} />
@@ -254,32 +269,43 @@ function StatCard({ label, value, color, delay, icon }: { label: string; value: 
   return (
     <FadeInItem delay={delay}>
       <div style={{
-        background: "linear-gradient(135deg, rgba(28,18,10,0.9), rgba(20,12,8,0.85))",
-        border: `1px solid rgba(210,140,60,0.15)`,
-        borderRadius: 12,
-        padding: "clamp(12px, 2.5vh, 20px) clamp(20px, 4vw, 32px)",
+        background: "linear-gradient(160deg, rgba(32,20,12,0.92), rgba(18,10,6,0.88))",
+        border: `1px solid rgba(210,140,60,0.12)`,
+        borderRadius: 14,
+        padding: "clamp(16px, 3vh, 24px) clamp(24px, 5vw, 38px)",
         textAlign: "center",
-        minWidth: "clamp(80px, 20vw, 120px)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        boxShadow: "0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)",
+        minWidth: "clamp(100px, 22vw, 140px)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.15)",
         position: "relative" as const,
         overflow: "hidden",
       }}>
         <div style={{
           position: "absolute",
           top: 0,
-          left: 0,
-          right: 0,
-          height: 1,
-          background: `linear-gradient(90deg, transparent, ${color}40, transparent)`,
+          left: "15%",
+          right: "15%",
+          height: 2,
+          background: `linear-gradient(90deg, transparent, ${color}60, transparent)`,
+          borderRadius: "0 0 2px 2px",
+        }} />
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: "25%",
+          right: "25%",
+          height: 12,
+          background: `radial-gradient(ellipse at top, ${color}15, transparent)`,
+          pointerEvents: "none",
         }} />
         {icon && (
           <div style={{
-            fontSize: 20,
-            marginBottom: 6,
+            fontSize: 22,
+            marginBottom: 8,
             animation: "iconFloat 3s ease-in-out infinite",
-            filter: `drop-shadow(0 0 6px ${color}60)`,
+            filter: `drop-shadow(0 0 8px ${color}50)`,
+            lineHeight: 1,
           }}>
             {icon}
           </div>
@@ -289,19 +315,21 @@ function StatCard({ label, value, color, delay, icon }: { label: string; value: 
           fontFamily: THEME.fonts.heading,
           color: THEME.colors.textMuted,
           textTransform: "uppercase",
-          letterSpacing: 3,
-          marginBottom: 8,
+          letterSpacing: 3.5,
+          marginBottom: 10,
+          fontWeight: 600,
         }}>
           {label}
         </div>
         <div style={{
-          fontSize: "clamp(24px, 5vw, 36px)",
+          fontSize: "clamp(26px, 5.5vw, 38px)",
           fontFamily: THEME.fonts.heading,
-          fontWeight: 800,
+          fontWeight: 900,
           color,
-          textShadow: `0 0 20px ${color}40`,
+          textShadow: `0 0 24px ${color}35, 0 2px 4px rgba(0,0,0,0.3)`,
           animation: "statCountUp 0.5s ease-out forwards",
-          letterSpacing: 1,
+          letterSpacing: 1.5,
+          lineHeight: 1,
         }}>
           {value}
         </div>
@@ -913,11 +941,11 @@ export function GameOverScreen() {
 
 
         <FadeInItem delay={1000}>
-          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", alignItems: "center" }}>
             <GameButton onClick={startGame} color="rgba(204,34,51,0.35)" glowColor={THEME.colors.dangerGlow} variant="danger">
               Try Again
             </GameButton>
-            <GameButton onClick={backToStart} color="rgba(255,165,0,0.15)" glowColor={THEME.colors.goldGlow} variant="ghost" small>
+            <GameButton onClick={backToStart} color="rgba(255,165,0,0.15)" glowColor={THEME.colors.goldGlow} variant="ghost">
               Menu
             </GameButton>
           </div>
@@ -1123,7 +1151,7 @@ export function VictoryScreen() {
             <GameButton onClick={startGame} color="rgba(255,165,0,0.3)" glowColor={THEME.colors.goldGlow} variant="primary">
               Play Again
             </GameButton>
-            <GameButton onClick={backToStart} color="rgba(255,165,0,0.15)" glowColor={THEME.colors.goldGlow} variant="ghost" small>
+            <GameButton onClick={backToStart} color="rgba(255,165,0,0.15)" glowColor={THEME.colors.goldGlow} variant="ghost">
               Menu
             </GameButton>
           </div>
