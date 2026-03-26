@@ -104,9 +104,9 @@ export function MazeWalls({ maze, level }: MazeWallsProps) {
       dummy.position.set(wall.x, wallHeight / 2, wall.z);
       dummy.rotation.set(0, 0, 0);
       if (wall.rotated) {
-        dummy.scale.set(wallThickness, wallHeight, CELL_SIZE);
+        dummy.scale.set(wallThickness, wallHeight, CELL_SIZE + wallThickness);
       } else {
-        dummy.scale.set(CELL_SIZE, wallHeight, wallThickness);
+        dummy.scale.set(CELL_SIZE + wallThickness, wallHeight, wallThickness);
       }
       dummy.updateMatrix();
       meshRef.current!.setMatrixAt(i, dummy.matrix);
@@ -122,13 +122,15 @@ export function MazeWalls({ maze, level }: MazeWallsProps) {
   }, [theme]);
 
   return (
-    <instancedMesh
-      ref={meshRef}
-      args={[undefined, undefined, wallSegments.length]}
-      material={wallMaterial}
-    >
-      <boxGeometry args={[1, 1, 1]} />
-    </instancedMesh>
+    <>
+      <instancedMesh
+        ref={meshRef}
+        args={[undefined, undefined, wallSegments.length]}
+        material={wallMaterial}
+      >
+        <boxGeometry args={[1, 1, 1]} />
+      </instancedMesh>
+    </>
   );
 }
 
