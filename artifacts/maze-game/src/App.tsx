@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { GameScene } from "./game/GameScene";
-import { StartScreen, GameOverScreen, LevelCompleteScreen, VictoryScreen } from "./game/Screens";
+import { StartScreen, GameOverScreen, LevelCompleteScreen, VictoryScreen, LoadingScreen } from "./game/Screens";
 import { InstructionsScreen } from "./game/Instructions";
 import { THEME } from "./game/theme";
 
@@ -91,6 +91,7 @@ function App() {
     <div style={{ width: "100vw", height: "100vh", overflow: "hidden", background: "#080a14" }}>
       <StartScreen />
       <InstructionsScreen />
+      <LoadingScreen />
       <GameOverScreen />
       <LevelCompleteScreen />
       <VictoryScreen />

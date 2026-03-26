@@ -91,6 +91,32 @@ export function getTorchPlacements(maze: MazeData, wallThickness: number, wallHe
   return selected;
 }
 
+function SceneReady({ onReady }: { onReady: () => void }) {
+  const called = useRef(false);
+  const frameCount = useRef(0);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!called.current) {
+        called.current = true;
+        onReady();
+      }
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, [onReady]);
+
+  useFrame(() => {
+    if (called.current) return;
+    frameCount.current++;
+    if (frameCount.current >= 3) {
+      called.current = true;
+      onReady();
+    }
+  });
+
+  return null;
+}
+
 function PlayerLantern({ color }: { color: string }) {
   const lightRef = useRef<THREE.PointLight>(null);
   const { camera } = useThree();
@@ -243,8 +269,10 @@ export function GameScene() {
   const setFeedback = useGameState((s) => s.setFeedback);
   const addTime = useGameState((s) => s.addTime);
 
+  const finishLoading = useGameState((s) => s.finishLoading);
+
   const config = getLevelConfig();
-  const isStartScreen = screen === "start";
+  const isActive = screen !== "start" && screen !== "instructions" && screen !== "gameOver" && screen !== "victory";
   const prevScreenRef = useRef(screen);
   const [collectedItems, setCollectedItems] = useState<Set<number>>(new Set());
 
@@ -252,7 +280,7 @@ export function GameScene() {
     if (screen === "playing") {
       startAmbient();
       setCollectedItems(new Set());
-    } else {
+    } else if (screen !== "loading") {
       stopAmbient();
     }
   }, [screen]);
@@ -279,9 +307,9 @@ export function GameScene() {
   }, [screen]);
 
   const mazeData = useMemo(() => {
-    if (isStartScreen) return null;
+    if (!isActive) return null;
     return generateMaze(config.mazeWidth, config.mazeHeight, config.algorithm, config.mathGateCount, config.extraPassageRate);
-  }, [level, runId, isStartScreen, config.mazeWidth, config.mazeHeight, config.algorithm, config.mathGateCount, config.extraPassageRate]);
+  }, [level, runId, isActive, config.mazeWidth, config.mazeHeight, config.algorithm, config.mathGateCount, config.extraPassageRate]);
 
   useEffect(() => {
     if (mazeData && mazeData.targetSum > 0) {
@@ -389,12 +417,19 @@ export function GameScene() {
   const theme = useMemo(() => getThemeForLevel(level), [level]);
   const torchPlacements = useMemo(() => mazeData ? getTorchPlacements(mazeData, theme.wallThickness, theme.wallHeight) : [], [mazeData, theme.wallThickness, theme.wallHeight]);
 
-  if (isStartScreen || !mazeData) return null;
+  if (!isActive || !mazeData) return null;
+
+  const isLoading = screen === "loading";
 
   return (
     <>
       <Canvas
-        style={{ position: "fixed", inset: 0, pointerEvents: screen === "paused" ? "none" : "auto" }}
+        style={{
+          position: "fixed",
+          inset: 0,
+          pointerEvents: screen === "paused" || isLoading ? "none" : "auto",
+          opacity: isLoading ? 0 : 1,
+        }}
         camera={{ fov: 75, near: 0.1, far: 100 }}
       >
         <color attach="background" args={[theme.fogColor]} />
@@ -438,6 +473,7 @@ export function GameScene() {
         <DeadEndDetector maze={mazeData} />
         <FlowFeedbackTicker />
         <PlayerController maze={mazeData} level={level} />
+        {screen === "loading" && <SceneReady key={`ready-${runId}-${level}`} onReady={finishLoading} />}
       </Canvas>
 
       <HUD />

@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useGameState, TOTAL_LEVELS } from "./gameState";
 import { THEME } from "./theme";
-import { getThemeForLevel } from "./levelThemes";
+import { getThemeForLevel, LEVEL_THEMES } from "./levelThemes";
 
 function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1156,6 +1156,169 @@ export function VictoryScreen() {
             </GameButton>
           </div>
         </FadeInItem>
+      </div>
+    </div>
+  );
+}
+
+const LOADING_TIPS = [
+  "Collect all gems before heading to the exit portal",
+  "Watch out for decoy math gates off the main path",
+  "Dead ends reset your streak multiplier",
+  "Bonus oranges are hidden in dead ends",
+  "Time pickups add 15 seconds to your clock",
+  "The compass points toward the exit portal",
+  "Your streak multiplier increases with each pickup",
+  "Path sum gates are mandatory to unlock the portal",
+];
+
+export function LoadingScreen() {
+  const screen = useGameState((s) => s.screen);
+  const level = useGameState((s) => s.level);
+  const [progress, setProgress] = useState(0);
+
+  const theme = useMemo(() => getThemeForLevel(level), [level]);
+  const tip = useMemo(() => LOADING_TIPS[Math.floor(Math.random() * LOADING_TIPS.length)], [level]);
+
+  useEffect(() => {
+    if (screen !== "loading") {
+      setProgress(0);
+      return;
+    }
+    let raf: number;
+    let start = performance.now();
+    const animate = (now: number) => {
+      const elapsed = now - start;
+      const t = Math.min(elapsed / 2000, 0.92);
+      setProgress(t);
+      raf = requestAnimationFrame(animate);
+    };
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [screen]);
+
+  if (screen !== "loading") return null;
+
+  return (
+    <div style={{
+      position: "fixed",
+      inset: 0,
+      zIndex: 200,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "radial-gradient(ellipse at 50% 30%, rgba(28,18,10,0.98), #080a14 70%)",
+      fontFamily: THEME.fonts.body,
+      color: THEME.colors.text,
+    }}>
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: "radial-gradient(circle at 50% 40%, rgba(210,136,42,0.06) 0%, transparent 60%)",
+        pointerEvents: "none",
+      }} />
+
+      <div style={{
+        position: "relative",
+        zIndex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 32,
+        animation: "mazeCinematicFadeIn 0.6s ease-out forwards",
+      }}>
+        <div style={{
+          fontFamily: THEME.fonts.heading,
+          fontSize: "clamp(14px, 3vw, 18px)",
+          fontWeight: 700,
+          color: THEME.colors.primary,
+          letterSpacing: 6,
+          textTransform: "uppercase",
+          textShadow: `0 0 30px ${THEME.colors.primaryGlow}`,
+        }}>
+          Entering
+        </div>
+
+        <div style={{
+          fontFamily: THEME.fonts.heading,
+          fontSize: "clamp(28px, 6vw, 48px)",
+          fontWeight: 900,
+          color: THEME.colors.text,
+          letterSpacing: 4,
+          textTransform: "uppercase",
+          textShadow: `0 0 40px ${THEME.colors.primaryGlow}, 0 2px 20px rgba(0,0,0,0.8)`,
+          textAlign: "center",
+        }}>
+          {theme.name}
+        </div>
+
+        <div style={{
+          width: 80,
+          height: 2,
+          background: `linear-gradient(90deg, transparent, ${THEME.colors.primary}, transparent)`,
+          borderRadius: 1,
+          boxShadow: `0 0 12px ${THEME.colors.primaryGlow}`,
+        }} />
+
+        <div style={{
+          width: "clamp(200px, 50vw, 320px)",
+          height: 4,
+          background: "rgba(210,136,42,0.1)",
+          borderRadius: 2,
+          overflow: "hidden",
+          position: "relative",
+        }}>
+          <div style={{
+            height: "100%",
+            width: `${progress * 100}%`,
+            background: `linear-gradient(90deg, ${THEME.colors.primary}, ${THEME.colors.gold})`,
+            borderRadius: 2,
+            boxShadow: `0 0 12px ${THEME.colors.primaryGlow}`,
+            transition: "width 0.1s linear",
+          }} />
+        </div>
+
+        <div style={{
+          fontFamily: THEME.fonts.body,
+          fontSize: "clamp(12px, 2.5vw, 15px)",
+          color: THEME.colors.textDim,
+          fontWeight: 500,
+          letterSpacing: 2,
+          textTransform: "uppercase",
+        }}>
+          Generating Maze...
+        </div>
+
+        <div style={{
+          marginTop: 16,
+          padding: "12px 24px",
+          background: "rgba(210,136,42,0.06)",
+          border: `1px solid rgba(210,136,42,0.12)`,
+          borderRadius: 8,
+          maxWidth: 360,
+          textAlign: "center",
+        }}>
+          <div style={{
+            fontSize: 11,
+            color: THEME.colors.primary,
+            fontWeight: 700,
+            letterSpacing: 3,
+            textTransform: "uppercase",
+            marginBottom: 6,
+            fontFamily: THEME.fonts.heading,
+          }}>
+            Tip
+          </div>
+          <div style={{
+            fontSize: "clamp(13px, 2.5vw, 15px)",
+            color: THEME.colors.textDim,
+            lineHeight: 1.5,
+            fontWeight: 400,
+          }}>
+            {tip}
+          </div>
+        </div>
       </div>
     </div>
   );

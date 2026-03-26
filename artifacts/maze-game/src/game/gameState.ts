@@ -62,7 +62,7 @@ const BASE_LEVELS: LevelConfig[] = [
 
 export const TOTAL_LEVELS = BASE_LEVELS.length;
 
-export type GameScreen = "start" | "instructions" | "playing" | "paused" | "levelComplete" | "gameOver" | "victory";
+export type GameScreen = "start" | "instructions" | "loading" | "playing" | "paused" | "levelComplete" | "gameOver" | "victory";
 
 interface GameState {
   screen: GameScreen;
@@ -98,6 +98,7 @@ interface GameState {
   getLevelConfig: () => LevelConfig;
   triggerScreenShake: (intensity: number) => void;
   beginPlaying: () => void;
+  finishLoading: () => void;
   pauseGame: () => void;
   resumeGame: () => void;
   exitGame: () => void;
@@ -148,7 +149,7 @@ export const useGameState = create<GameState>((set, get) => ({
     const randomLevel = 1 + Math.floor(Math.random() * BASE_LEVELS.length);
     const config = BASE_LEVELS[randomLevel - 1];
     set((s) => ({
-      screen: "playing",
+      screen: "loading",
       level: randomLevel,
       levelsCompleted: 0,
       score: 0,
@@ -170,6 +171,12 @@ export const useGameState = create<GameState>((set, get) => ({
     }));
   },
 
+  finishLoading: () => {
+    if (get().screen === "loading") {
+      set({ screen: "playing" });
+    }
+  },
+
   nextLevel: () => {
     const state = get();
     const completed = state.levelsCompleted + 1;
@@ -183,7 +190,7 @@ export const useGameState = create<GameState>((set, get) => ({
     }
     const config = BASE_LEVELS[nextLevelNum - 1];
     set({
-      screen: "playing",
+      screen: "loading",
       level: nextLevelNum,
       levelsCompleted: completed,
       timeRemaining: config.timeLimit,
