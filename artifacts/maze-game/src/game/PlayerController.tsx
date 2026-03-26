@@ -44,18 +44,17 @@ export function PlayerController({ maze, level }: PlayerControllerProps) {
         const cell = maze.cells[y][x];
         const cx = x * CELL_SIZE;
         const cz = y * CELL_SIZE;
-        const EXT = WALL_THICKNESS / 2;
         if (cell.walls.north) {
-          boxes.push({ minX: cx - CELL_SIZE / 2 - EXT, maxX: cx + CELL_SIZE / 2 + EXT, minZ: cz - CELL_SIZE / 2 - WALL_THICKNESS / 2, maxZ: cz - CELL_SIZE / 2 + WALL_THICKNESS / 2 });
+          boxes.push({ minX: cx - CELL_SIZE / 2, maxX: cx + CELL_SIZE / 2, minZ: cz - CELL_SIZE / 2 - WALL_THICKNESS / 2, maxZ: cz - CELL_SIZE / 2 + WALL_THICKNESS / 2 });
         }
         if (cell.walls.west) {
-          boxes.push({ minX: cx - CELL_SIZE / 2 - WALL_THICKNESS / 2, maxX: cx - CELL_SIZE / 2 + WALL_THICKNESS / 2, minZ: cz - CELL_SIZE / 2 - EXT, maxZ: cz + CELL_SIZE / 2 + EXT });
+          boxes.push({ minX: cx - CELL_SIZE / 2 - WALL_THICKNESS / 2, maxX: cx - CELL_SIZE / 2 + WALL_THICKNESS / 2, minZ: cz - CELL_SIZE / 2, maxZ: cz + CELL_SIZE / 2 });
         }
         if (x === maze.width - 1 && cell.walls.east) {
-          boxes.push({ minX: cx + CELL_SIZE / 2 - WALL_THICKNESS / 2, maxX: cx + CELL_SIZE / 2 + WALL_THICKNESS / 2, minZ: cz - CELL_SIZE / 2 - EXT, maxZ: cz + CELL_SIZE / 2 + EXT });
+          boxes.push({ minX: cx + CELL_SIZE / 2 - WALL_THICKNESS / 2, maxX: cx + CELL_SIZE / 2 + WALL_THICKNESS / 2, minZ: cz - CELL_SIZE / 2, maxZ: cz + CELL_SIZE / 2 });
         }
         if (y === maze.height - 1 && cell.walls.south) {
-          boxes.push({ minX: cx - CELL_SIZE / 2 - EXT, maxX: cx + CELL_SIZE / 2 + EXT, minZ: cz + CELL_SIZE / 2 - WALL_THICKNESS / 2, maxZ: cz + CELL_SIZE / 2 + WALL_THICKNESS / 2 });
+          boxes.push({ minX: cx - CELL_SIZE / 2, maxX: cx + CELL_SIZE / 2, minZ: cz + CELL_SIZE / 2 - WALL_THICKNESS / 2, maxZ: cz + CELL_SIZE / 2 + WALL_THICKNESS / 2 });
         }
 
         const half = CELL_SIZE / 2;

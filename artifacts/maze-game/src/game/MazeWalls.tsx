@@ -2,7 +2,7 @@ import { useRef, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import type { MazeData } from "./mazeGenerator";
-import { getWallSegments } from "./mazeGenerator";
+import { getWallSegments, getCornerPillars } from "./mazeGenerator";
 import { type LevelTheme, getThemeForLevel } from "./levelThemes";
 import { useGameState } from "./gameState";
 
@@ -91,7 +91,9 @@ function buildWallMaterial(theme: LevelTheme): THREE.MeshStandardMaterial {
 
 export function MazeWalls({ maze, level }: MazeWallsProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
+  const pillarRef = useRef<THREE.InstancedMesh>(null);
   const wallSegments = useMemo(() => getWallSegments(maze), [maze]);
+  const cornerPillars = useMemo(() => getCornerPillars(maze), [maze]);
   const theme = useMemo(() => getThemeForLevel(level), [level]);
   const wallHeight = theme.wallHeight;
   const wallThickness = theme.wallThickness;
@@ -104,9 +106,9 @@ export function MazeWalls({ maze, level }: MazeWallsProps) {
       dummy.position.set(wall.x, wallHeight / 2, wall.z);
       dummy.rotation.set(0, 0, 0);
       if (wall.rotated) {
-        dummy.scale.set(wallThickness, wallHeight, CELL_SIZE + wallThickness);
+        dummy.scale.set(wallThickness, wallHeight, CELL_SIZE);
       } else {
-        dummy.scale.set(CELL_SIZE + wallThickness, wallHeight, wallThickness);
+        dummy.scale.set(CELL_SIZE, wallHeight, wallThickness);
       }
       dummy.updateMatrix();
       meshRef.current!.setMatrixAt(i, dummy.matrix);
@@ -116,6 +118,23 @@ export function MazeWalls({ maze, level }: MazeWallsProps) {
     meshRef.current.computeBoundingSphere();
     meshRef.current.computeBoundingBox();
   }, [wallSegments, wallHeight, wallThickness]);
+
+  useEffect(() => {
+    if (!pillarRef.current || cornerPillars.length === 0) return;
+    const dummy = new THREE.Object3D();
+
+    cornerPillars.forEach((pillar, i) => {
+      dummy.position.set(pillar.x, wallHeight / 2, pillar.z);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(wallThickness, wallHeight, wallThickness);
+      dummy.updateMatrix();
+      pillarRef.current!.setMatrixAt(i, dummy.matrix);
+    });
+
+    pillarRef.current.instanceMatrix.needsUpdate = true;
+    pillarRef.current.computeBoundingSphere();
+    pillarRef.current.computeBoundingBox();
+  }, [cornerPillars, wallHeight, wallThickness]);
 
   const wallMaterial = useMemo(() => {
     return buildWallMaterial(theme);
@@ -130,6 +149,15 @@ export function MazeWalls({ maze, level }: MazeWallsProps) {
       >
         <boxGeometry args={[1, 1, 1]} />
       </instancedMesh>
+      {cornerPillars.length > 0 && (
+        <instancedMesh
+          ref={pillarRef}
+          args={[undefined, undefined, cornerPillars.length]}
+          material={wallMaterial}
+        >
+          <boxGeometry args={[1, 1, 1]} />
+        </instancedMesh>
+      )}
     </>
   );
 }
