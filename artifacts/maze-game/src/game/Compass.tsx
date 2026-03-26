@@ -4,9 +4,9 @@ import type { MazeData } from "./mazeGenerator";
 
 const CELL_SIZE = 4;
 const COMPASS_REDRAW_INTERVAL = 50;
-const BAR_WIDTH = 320;
-const BAR_HEIGHT = 24;
-const EXIT_LABEL_ZONE = 50;
+const BAR_WIDTH = 420;
+const BAR_HEIGHT = 32;
+const EXIT_LABEL_ZONE = 60;
 
 interface CompassProps {
   maze: MazeData;
@@ -108,8 +108,8 @@ export function Compass({ maze }: CompassProps) {
 
         ctx.fillStyle = isCardinal ? "rgba(210, 140, 60, 0.9)" : "rgba(210, 140, 60, 0.4)";
         ctx.font = isCardinal
-          ? "bold 10px 'Orbitron', sans-serif"
-          : "8px 'Rajdhani', sans-serif";
+          ? "bold 13px 'Orbitron', sans-serif"
+          : "10px 'Rajdhani', sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(label, x, centerY);
@@ -117,7 +117,7 @@ export function Compass({ maze }: CompassProps) {
         ctx.strokeStyle = "rgba(210, 140, 60, 0.15)";
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(x, h - 4);
+        ctx.moveTo(x, h - 5);
         ctx.lineTo(x, h);
         ctx.stroke();
       });
@@ -203,8 +203,8 @@ export function Compass({ maze }: CompassProps) {
       ctx.font = "bold 9px 'Rajdhani', sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(`EXIT`, compassAreaW + EXIT_LABEL_ZONE / 2, centerY - 5);
-      ctx.fillText(distLabel, compassAreaW + EXIT_LABEL_ZONE / 2, centerY + 5);
+      ctx.fillText(`EXIT`, compassAreaW + EXIT_LABEL_ZONE / 2, centerY - 7);
+      ctx.fillText(distLabel, compassAreaW + EXIT_LABEL_ZONE / 2, centerY + 7);
 
       ctx.restore();
 
