@@ -137,7 +137,9 @@ export function PlayerController({ maze, level }: PlayerControllerProps) {
   const handleClick = useCallback(() => {
     if (screen !== "playing") return;
     if (!lockedRef.current) {
-      gl.domElement.requestPointerLock();
+      try {
+        gl.domElement.requestPointerLock();
+      } catch (_) {}
     }
   }, [gl, screen]);
 

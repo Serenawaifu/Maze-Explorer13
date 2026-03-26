@@ -460,9 +460,11 @@ function PauseOverlay() {
     setTimeout(() => {
       const canvas = document.querySelector("canvas");
       if (canvas && !document.pointerLockElement) {
-        canvas.requestPointerLock();
+        try {
+          canvas.requestPointerLock();
+        } catch (_) {}
       }
-    }, 50);
+    }, 100);
   }, [resumeGame]);
 
   const handleExit = useCallback(() => {
@@ -485,9 +487,11 @@ function PauseOverlay() {
         setTimeout(() => {
           const canvas = document.querySelector("canvas");
           if (canvas && !document.pointerLockElement) {
-            canvas.requestPointerLock();
+            try {
+              canvas.requestPointerLock();
+            } catch (_) {}
           }
-        }, 50);
+        }, 100);
       }
     };
     window.addEventListener("keydown", handleKey);
@@ -509,6 +513,7 @@ function PauseOverlay() {
       backdropFilter: "blur(16px)",
       WebkitBackdropFilter: "blur(16px)",
       transition: "background 0.4s ease",
+      pointerEvents: "auto",
     }}>
       <style>{`
         @keyframes pauseShine {
