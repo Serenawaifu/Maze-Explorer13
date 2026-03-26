@@ -546,7 +546,7 @@ export const LEVEL_THEMES: LevelTheme[] = [
   {
     name: "Stone Dungeon",
     wallHeight: 4.8,
-    wallThickness: 0.55,
+    wallThickness: 1.0,
     wallColor: [0.45, 0.33, 0.22],
     wallBaseHex: "#6a4e32",
     wallBrickFn: stoneBrick,
@@ -572,7 +572,7 @@ export const LEVEL_THEMES: LevelTheme[] = [
   {
     name: "Overgrown Hedge",
     wallHeight: 2.2,
-    wallThickness: 0.85,
+    wallThickness: 1.4,
     wallColor: [0.2, 0.42, 0.15],
     wallBaseHex: "#1e4818",
     wallBrickFn: hedgeLeaf,
@@ -598,7 +598,7 @@ export const LEVEL_THEMES: LevelTheme[] = [
   {
     name: "Backrooms",
     wallHeight: 3.0,
-    wallThickness: 0.1,
+    wallThickness: 0.3,
     wallColor: [0.78, 0.75, 0.52],
     wallBaseHex: "#c8c088",
     wallBrickFn: backroomsPanel,
@@ -624,7 +624,7 @@ export const LEVEL_THEMES: LevelTheme[] = [
   {
     name: "Voxel Arena",
     wallHeight: 3.8,
-    wallThickness: 0.4,
+    wallThickness: 0.8,
     wallColor: [0.3, 0.5, 0.8],
     wallBaseHex: "#3570c0",
     wallBrickFn: voxelBlock,
@@ -650,7 +650,7 @@ export const LEVEL_THEMES: LevelTheme[] = [
   {
     name: "Squid Game",
     wallHeight: 3.5,
-    wallThickness: 0.3,
+    wallThickness: 0.7,
     wallColor: [0.30, 0.29, 0.27],
     wallBaseHex: "#4a4845",
     wallBrickFn: squidGamePanel,
@@ -676,7 +676,7 @@ export const LEVEL_THEMES: LevelTheme[] = [
   {
     name: "Candy World",
     wallHeight: 2.0,
-    wallThickness: 0.5,
+    wallThickness: 0.9,
     wallColor: [0.92, 0.55, 0.68],
     wallBaseHex: "#e890a8",
     wallBrickFn: candyStripe,
