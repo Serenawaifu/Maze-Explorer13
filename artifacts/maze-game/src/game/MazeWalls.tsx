@@ -122,11 +122,12 @@ export function MazeWalls({ maze, level }: MazeWallsProps) {
   useEffect(() => {
     if (!pillarRef.current || cornerPillars.length === 0) return;
     const dummy = new THREE.Object3D();
+    const SHRINK = 0.01;
 
     cornerPillars.forEach((pillar, i) => {
       dummy.position.set(pillar.x, wallHeight / 2, pillar.z);
       dummy.rotation.set(0, 0, 0);
-      dummy.scale.set(wallThickness, wallHeight, wallThickness);
+      dummy.scale.set(wallThickness - SHRINK, wallHeight - SHRINK, wallThickness - SHRINK);
       dummy.updateMatrix();
       pillarRef.current!.setMatrixAt(i, dummy.matrix);
     });
@@ -138,6 +139,14 @@ export function MazeWalls({ maze, level }: MazeWallsProps) {
 
   const wallMaterial = useMemo(() => {
     return buildWallMaterial(theme);
+  }, [theme]);
+
+  const pillarMaterial = useMemo(() => {
+    const mat = buildWallMaterial(theme);
+    mat.polygonOffset = true;
+    mat.polygonOffsetFactor = 1;
+    mat.polygonOffsetUnits = 1;
+    return mat;
   }, [theme]);
 
   return (
@@ -153,7 +162,7 @@ export function MazeWalls({ maze, level }: MazeWallsProps) {
         <instancedMesh
           ref={pillarRef}
           args={[undefined, undefined, cornerPillars.length]}
-          material={wallMaterial}
+          material={pillarMaterial}
         >
           <boxGeometry args={[1, 1, 1]} />
         </instancedMesh>
