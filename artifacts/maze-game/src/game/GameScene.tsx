@@ -93,7 +93,9 @@ export function getTorchPlacements(maze: MazeData, wallThickness: number, wallHe
 
 function SceneReady({ onReady }: { onReady: () => void }) {
   const called = useRef(false);
+  const compiled = useRef(false);
   const frameCount = useRef(0);
+  const { gl, scene, camera } = useThree();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -101,14 +103,24 @@ function SceneReady({ onReady }: { onReady: () => void }) {
         called.current = true;
         onReady();
       }
-    }, 5000);
+    }, 8000);
     return () => clearTimeout(timeout);
   }, [onReady]);
 
   useFrame(() => {
     if (called.current) return;
+
+    if (!compiled.current) {
+      try {
+        gl.compile(scene, camera);
+      } catch (_) {}
+      compiled.current = true;
+      frameCount.current = 0;
+      return;
+    }
+
     frameCount.current++;
-    if (frameCount.current >= 3) {
+    if (frameCount.current >= 10) {
       called.current = true;
       onReady();
     }
@@ -427,8 +439,8 @@ export function GameScene() {
         style={{
           position: "fixed",
           inset: 0,
+          zIndex: isLoading ? -1 : undefined,
           pointerEvents: screen === "paused" || isLoading ? "none" : "auto",
-          opacity: isLoading ? 0 : 1,
         }}
         camera={{ fov: 75, near: 0.1, far: 100 }}
       >

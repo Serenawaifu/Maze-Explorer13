@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useCallback } from "react";
+import { useMemo, useRef, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF, Billboard } from "@react-three/drei";
 import * as THREE from "three";
@@ -430,48 +430,49 @@ function FireParticles({ position, opacityRef }: {
   );
 }
 
-function TorchFlameEffect({ worldPos, opacityRef }: {
-  worldPos: [number, number, number];
-  opacityRef: React.RefObject<number>;
-}) {
-  const boneY = worldPos[1] - 0.06;
-  const flamePos: [number, number, number] = [worldPos[0], boneY + 0.18, worldPos[2]];
-  const innerPos: [number, number, number] = [worldPos[0], boneY + 0.20, worldPos[2]];
-  const lightPos: [number, number, number] = [worldPos[0], boneY + 0.12, worldPos[2]];
-  const particlePos: [number, number, number] = [worldPos[0], boneY, worldPos[2]];
+interface FlameSlotData {
+  posRef: React.MutableRefObject<[number, number, number]>;
+  opRef: React.MutableRefObject<number>;
+}
 
-  const lightRef = useRef<THREE.PointLight>(null!);
+function PooledFlameSlot({ data }: { data: FlameSlotData }) {
   const groupRef = useRef<THREE.Group>(null!);
+  const lightRef = useRef<THREE.PointLight>(null!);
   const time = useRef(0);
 
   useFrame((_, delta) => {
+    if (!groupRef.current) return;
+    const o = data.opRef.current;
+    groupRef.current.visible = o > 0.01;
+    if (o <= 0.01) return;
+
+    const pos = data.posRef.current;
+    groupRef.current.position.set(pos[0], pos[1], pos[2]);
+
     time.current += delta;
-    const o = opacityRef.current!;
-    if (groupRef.current) {
-      groupRef.current.visible = o > 0.01;
+    if (lightRef.current) {
+      const t = time.current;
+      const flicker =
+        4.0 +
+        Math.sin(t * 8.3) * 1.0 +
+        Math.sin(t * 13.7 + 1.2) * 0.5 +
+        Math.sin(t * 5.1 + 2.5) * 0.6;
+      lightRef.current.intensity = flicker * o;
+      lightRef.current.position.x = Math.sin(t * 6) * 0.02;
+      lightRef.current.position.z = Math.cos(t * 7) * 0.02;
     }
-    if (!lightRef.current) return;
-    const t = time.current;
-    const flicker =
-      4.0 +
-      Math.sin(t * 8.3) * 1.0 +
-      Math.sin(t * 13.7 + 1.2) * 0.5 +
-      Math.sin(t * 5.1 + 2.5) * 0.6;
-    lightRef.current.intensity = flicker * o;
-    lightRef.current.position.x = lightPos[0] + Math.sin(t * 6) * 0.02;
-    lightRef.current.position.z = lightPos[2] + Math.cos(t * 7) * 0.02;
   });
 
   return (
-    <group ref={groupRef}>
-      <SpriteFlame position={flamePos} opacityRef={opacityRef} />
-      <SpriteFlameInner position={innerPos} opacityRef={opacityRef} />
-      <FireParticles position={particlePos} opacityRef={opacityRef} />
+    <group ref={groupRef} visible={false}>
+      <SpriteFlame position={[0, 0.12, 0]} opacityRef={data.opRef} />
+      <SpriteFlameInner position={[0, 0.14, 0]} opacityRef={data.opRef} />
+      <FireParticles position={[0, -0.06, 0]} opacityRef={data.opRef} />
       <pointLight
         ref={lightRef}
-        position={lightPos}
+        position={[0, 0.06, 0]}
         color="#ff8830"
-        intensity={4.0}
+        intensity={0}
         distance={4.5}
         decay={2}
       />
@@ -491,16 +492,17 @@ function NearbyFlameEffects({ torchPlacements, maze }: { torchPlacements: TorchP
     });
   }, [torchPlacements]);
 
-  const opacitiesArr = useRef<Float32Array>(new Float32Array(torchPlacements.length));
-  const opacityRefs = useRef<React.RefObject<number>[]>([]);
+  const opacities = useRef(new Float32Array(torchPlacements.length));
   const activeSetRef = useRef<Set<number>>(new Set());
   const sortTimerRef = useRef(0);
-  const [renderIndices, setRenderIndices] = useState<number[]>([]);
+  const slotTorch = useRef<number[]>(Array(MAX_FLAME_TORCHES).fill(-1));
 
-  if (opacityRefs.current.length !== torchPlacements.length) {
-    opacityRefs.current = torchPlacements.map(() => ({ current: 0 }));
-    opacitiesArr.current = new Float32Array(torchPlacements.length);
-  }
+  const slotData = useMemo<FlameSlotData[]>(() => {
+    return Array.from({ length: MAX_FLAME_TORCHES }, () => ({
+      posRef: { current: [0, -1000, 0] as [number, number, number] },
+      opRef: { current: 0 },
+    }));
+  }, []);
 
   useFrame((_, delta) => {
     sortTimerRef.current += delta;
@@ -529,7 +531,7 @@ function NearbyFlameEffects({ torchPlacements, maze }: { torchPlacements: TorchP
       }
 
       for (const idx of activeSetRef.current) {
-        if (!newActive.has(idx) && opacitiesArr.current[idx] > 0.01) {
+        if (!newActive.has(idx) && opacities.current[idx] > 0.01) {
           const pos = worldPositions[idx];
           const d = Math.sqrt((pos[0] - pp.x) ** 2 + (pos[2] - pp.z) ** 2);
           if (d < FLAME_OFF_DIST) {
@@ -540,33 +542,52 @@ function NearbyFlameEffects({ torchPlacements, maze }: { torchPlacements: TorchP
 
       activeSetRef.current = newActive;
 
-      const indices = Array.from(newActive);
-      setRenderIndices(prev => {
-        if (prev.length === indices.length && prev.every((v, j) => v === indices[j])) return prev;
-        return indices;
-      });
+      for (let s = 0; s < MAX_FLAME_TORCHES; s++) {
+        const idx = slotTorch.current[s];
+        if (idx !== -1 && !newActive.has(idx) && opacities.current[idx] <= 0.01) {
+          slotTorch.current[s] = -1;
+        }
+      }
+
+      for (const idx of newActive) {
+        let found = false;
+        for (let s = 0; s < MAX_FLAME_TORCHES; s++) {
+          if (slotTorch.current[s] === idx) { found = true; break; }
+        }
+        if (!found) {
+          for (let s = 0; s < MAX_FLAME_TORCHES; s++) {
+            if (slotTorch.current[s] === -1) {
+              slotTorch.current[s] = idx;
+              break;
+            }
+          }
+        }
+      }
     }
 
     for (let i = 0; i < torchPlacements.length; i++) {
       if (activeSetRef.current.has(i)) {
-        opacitiesArr.current[i] = Math.min(1, opacitiesArr.current[i] + delta * FADE_IN_SPEED);
+        opacities.current[i] = Math.min(1, opacities.current[i] + delta * FADE_IN_SPEED);
       } else {
-        opacitiesArr.current[i] = Math.max(0, opacitiesArr.current[i] - delta * FADE_OUT_SPEED);
+        opacities.current[i] = Math.max(0, opacities.current[i] - delta * FADE_OUT_SPEED);
       }
-      if (opacityRefs.current[i]) {
-        opacityRefs.current[i].current = opacitiesArr.current[i];
+    }
+
+    for (let s = 0; s < MAX_FLAME_TORCHES; s++) {
+      const idx = slotTorch.current[s];
+      if (idx !== -1) {
+        slotData[s].posRef.current = worldPositions[idx];
+        slotData[s].opRef.current = opacities.current[idx];
+      } else {
+        slotData[s].opRef.current = 0;
       }
     }
   });
 
   return (
     <>
-      {renderIndices.map(idx => (
-        <TorchFlameEffect
-          key={idx}
-          worldPos={worldPositions[idx]}
-          opacityRef={opacityRefs.current[idx]}
-        />
+      {slotData.map((slot, i) => (
+        <PooledFlameSlot key={i} data={slot} />
       ))}
     </>
   );
