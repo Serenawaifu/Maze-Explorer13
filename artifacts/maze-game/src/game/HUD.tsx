@@ -442,7 +442,6 @@ function PauseOverlay() {
   const exitGame = useGameState((s) => s.exitGame);
   const [exitHovered, setExitHovered] = useState(false);
   const [resumeHovered, setResumeHovered] = useState(false);
-  const [exitConfirm, setExitConfirm] = useState(false);
   const [resumePressed, setResumePressed] = useState(false);
   const [exitPressed, setExitPressed] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
@@ -468,16 +467,11 @@ function PauseOverlay() {
   }, [resumeGame]);
 
   const handleExit = useCallback(() => {
-    if (!exitConfirm) {
-      setExitConfirm(true);
-      return;
-    }
     exitGame();
-  }, [exitConfirm, exitGame]);
+  }, [exitGame]);
 
   useEffect(() => {
     if (screen !== "paused") {
-      setExitConfirm(false);
       return;
     }
     const handleKey = (e: KeyboardEvent) => {
@@ -601,7 +595,7 @@ function PauseOverlay() {
           <PauseMenuButton
             onClick={handleExit}
             onMouseOver={() => setExitHovered(true)}
-            onMouseOut={() => { setExitHovered(false); setExitPressed(false); setExitConfirm(false); }}
+            onMouseOut={() => { setExitHovered(false); setExitPressed(false); }}
             hovered={exitHovered}
             pressed={exitPressed}
             accentColor="#cc2233"
@@ -612,7 +606,7 @@ function PauseOverlay() {
               <path d="M2.5 9H11.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
               <path d="M8.5 5.5L12 9L8.5 12.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
             </svg>
-            {exitConfirm ? "Confirm Exit?" : "Exit Game"}
+            Exit Game
           </PauseMenuButton>
         </div>
 
