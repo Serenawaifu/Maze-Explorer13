@@ -394,7 +394,7 @@ export function GameScene() {
   return (
     <>
       <Canvas
-        style={{ position: "fixed", inset: 0 }}
+        style={{ position: "fixed", inset: 0, pointerEvents: screen === "paused" ? "none" : "auto" }}
         camera={{ fov: 75, near: 0.1, far: 100 }}
       >
         <color attach="background" args={[theme.fogColor]} />

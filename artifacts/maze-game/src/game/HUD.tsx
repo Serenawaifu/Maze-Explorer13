@@ -457,12 +457,12 @@ function PauseOverlay() {
 
   const handleResume = useCallback(() => {
     resumeGame();
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       const canvas = document.querySelector("canvas");
       if (canvas && !document.pointerLockElement) {
         canvas.requestPointerLock();
       }
-    });
+    }, 50);
   }, [resumeGame]);
 
   const handleExit = useCallback(() => {
@@ -482,12 +482,12 @@ function PauseOverlay() {
       if (e.key === "Escape") {
         e.preventDefault();
         resumeGame();
-        requestAnimationFrame(() => {
+        setTimeout(() => {
           const canvas = document.querySelector("canvas");
           if (canvas && !document.pointerLockElement) {
             canvas.requestPointerLock();
           }
-        });
+        }, 50);
       }
     };
     window.addEventListener("keydown", handleKey);
