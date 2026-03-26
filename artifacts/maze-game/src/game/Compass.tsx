@@ -34,11 +34,15 @@ export function Compass({ maze }: CompassProps) {
       const totalCollectibles = state.totalCollectibles;
       const yaw = state.playerYaw;
 
+      const dpr = window.devicePixelRatio || 1;
       const w = BAR_WIDTH;
       const h = BAR_HEIGHT;
-      if (canvas.width !== w) canvas.width = w;
-      if (canvas.height !== h) canvas.height = h;
+      const bw = Math.round(w * dpr);
+      const bh = Math.round(h * dpr);
+      if (canvas.width !== bw) canvas.width = bw;
+      if (canvas.height !== bh) canvas.height = bh;
 
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
 
       const r = 10;
@@ -196,7 +200,7 @@ export function Compass({ maze }: CompassProps) {
       ctx.stroke();
 
       ctx.fillStyle = mathExceeded ? "rgba(204, 51, 51, 0.8)" : (dist < 8 && portalReady) ? "rgba(68, 204, 136, 0.8)" : "rgba(210, 140, 60, 0.5)";
-      ctx.font = "bold 7px 'Rajdhani', sans-serif";
+      ctx.font = "bold 9px 'Rajdhani', sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(`EXIT`, compassAreaW + EXIT_LABEL_ZONE / 2, centerY - 5);
