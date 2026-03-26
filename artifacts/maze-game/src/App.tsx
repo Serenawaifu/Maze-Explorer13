@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { GameScene } from "./game/GameScene";
-import { StartScreen, GameOverScreen, LevelCompleteScreen, VictoryScreen, LoadingScreen } from "./game/Screens";
-import { InstructionsScreen } from "./game/Instructions";
-import { THEME } from "./game/theme";
+import { GameScene } from "./scene/GameScene";
+import { StartScreen, GameOverScreen, LevelCompleteScreen, VictoryScreen, LoadingScreen } from "./ui/Screens";
+import { InstructionsScreen } from "./ui/Instructions";
+import { THEME } from "./ui/theme";
 
 function isMobileDevice(): boolean {
   if (typeof window === "undefined") return false;

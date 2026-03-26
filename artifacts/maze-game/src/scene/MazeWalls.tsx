@@ -1,10 +1,10 @@
 import { useRef, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import type { MazeData } from "./mazeGenerator";
-import { getWallSegments, getCornerPillars } from "./mazeGenerator";
-import { type LevelTheme, getThemeForLevel } from "./levelThemes";
-import { useGameState } from "./gameState";
+import type { MazeData } from "../engine/mazeGenerator";
+import { getWallSegments, getCornerPillars } from "../engine/mazeGenerator";
+import { type LevelTheme, getThemeForLevel } from "../engine/levelThemes";
+import { useGameState } from "../engine/gameState";
 
 const CELL_SIZE = 4;
 

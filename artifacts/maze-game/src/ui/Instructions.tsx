@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { useState, useEffect } from "react";
-import { useGameState } from "./gameState";
+import { useGameState } from "../engine/gameState";
 import { THEME } from "./theme";
 
 const instructionsCSS = `

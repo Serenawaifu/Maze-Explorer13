@@ -1,8 +1,8 @@
 import { useRef, useState, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { playPickup } from "./audioSystem";
-import { useGameState } from "./gameState";
+import { playPickup } from "../engine/audioSystem";
+import { useGameState } from "../engine/gameState";
 
 const SPARKLE_COUNT = 20;
 

@@ -1,9 +1,9 @@
 import type { CSSProperties, ChangeEvent } from "react";
 import { useEffect, useRef, useMemo, useState, useCallback } from "react";
-import { useGameState, TOTAL_LEVELS } from "./gameState";
+import { useGameState, TOTAL_LEVELS } from "../engine/gameState";
 import { THEME } from "./theme";
-import { useAudioState, updateMasterVolume } from "./audioSystem";
-import { getThemeForLevel } from "./levelThemes";
+import { useAudioState, updateMasterVolume } from "../engine/audioSystem";
+import { getThemeForLevel } from "../engine/levelThemes";
 
 function VolumeControl() {
   const muted = useAudioState((s) => s.muted);

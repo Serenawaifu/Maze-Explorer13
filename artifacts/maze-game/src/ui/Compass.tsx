@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
-import { useGameState } from "./gameState";
-import type { MazeData } from "./mazeGenerator";
+import { useGameState } from "../engine/gameState";
+import type { MazeData } from "../engine/mazeGenerator";
 
 const CELL_SIZE = 4;
 const COMPASS_REDRAW_INTERVAL = 50;

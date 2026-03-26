@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState, useRef, useMemo } from "react";
-import { useGameState, TOTAL_LEVELS } from "./gameState";
+import { useGameState, TOTAL_LEVELS } from "../engine/gameState";
 import { THEME } from "./theme";
-import { getThemeForLevel, LEVEL_THEMES } from "./levelThemes";
+import { getThemeForLevel, LEVEL_THEMES } from "../engine/levelThemes";
 
 function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

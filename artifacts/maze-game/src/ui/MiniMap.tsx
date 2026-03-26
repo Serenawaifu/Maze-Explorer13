@@ -1,8 +1,8 @@
 import { useRef, useEffect, useState } from "react";
-import type { MazeData } from "./mazeGenerator";
+import type { MazeData } from "../engine/mazeGenerator";
 import { THEME } from "./theme";
-import { getThemeForLevel } from "./levelThemes";
-import { useGameState } from "./gameState";
+import { getThemeForLevel } from "../engine/levelThemes";
+import { useGameState } from "../engine/gameState";
 
 const CELL_SIZE = 4;
 const MAP_SIZE = 120;

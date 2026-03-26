@@ -1,10 +1,10 @@
 import { useRef, useEffect, useCallback, useMemo } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import type { MazeData } from "./mazeGenerator";
-import { useGameState } from "./gameState";
-import { playFootstep } from "./audioSystem";
-import { getThemeForLevel } from "./levelThemes";
+import type { MazeData } from "../engine/mazeGenerator";
+import { useGameState } from "../engine/gameState";
+import { playFootstep } from "../engine/audioSystem";
+import { getThemeForLevel } from "../engine/levelThemes";
 
 const CELL_SIZE = 4;
 const MOVE_SPEED = 5;

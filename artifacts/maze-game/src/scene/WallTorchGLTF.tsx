@@ -3,8 +3,8 @@ import { useFrame } from "@react-three/fiber";
 import { useGLTF, Billboard } from "@react-three/drei";
 import * as THREE from "three";
 import type { TorchPlacement } from "./GameScene";
-import type { MazeData } from "./mazeGenerator";
-import { useGameState } from "./gameState";
+import type { MazeData } from "../engine/mazeGenerator";
+import { useGameState } from "../engine/gameState";
 
 const MODEL_URL = `${import.meta.env.BASE_URL}models/torch.gltf`;
 const CELL_SIZE = 4;

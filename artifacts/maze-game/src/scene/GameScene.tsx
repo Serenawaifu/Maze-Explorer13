@@ -1,24 +1,24 @@
 import { useMemo, useCallback, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { generateMaze, getCollectiblePositions, isDeadEnd } from "./mazeGenerator";
-import type { MazeData } from "./mazeGenerator";
+import { generateMaze, getCollectiblePositions, isDeadEnd } from "../engine/mazeGenerator";
+import type { MazeData } from "../engine/mazeGenerator";
 import { MazeWalls, MazeFloor, MazeCeiling, ExitMarker } from "./MazeWalls";
 import { PlayerController } from "./PlayerController";
 import { Collectible } from "./Collectible";
 import { MathGateComponent } from "./MathGate";
-import { HUD } from "./HUD";
-import { Compass } from "./Compass";
-import { MiniMap } from "./MiniMap";
-import { useGameState } from "./gameState";
-import { getThemeForLevel } from "./levelThemes";
+import { HUD } from "../ui/HUD";
+import { Compass } from "../ui/Compass";
+import { MiniMap } from "../ui/MiniMap";
+import { useGameState } from "../engine/gameState";
+import { getThemeForLevel } from "../engine/levelThemes";
 import {
   startAmbient,
   stopAmbient,
   playLevelComplete,
   playVictoryFanfare,
   playGameOver,
-} from "./audioSystem";
+} from "../engine/audioSystem";
 import { WallTorchGLTFModels } from "./WallTorchGLTF";
 
 const CELL_SIZE = 4;
