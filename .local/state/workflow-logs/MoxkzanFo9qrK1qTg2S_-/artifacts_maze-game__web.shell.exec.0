@@ -1,0 +1,391 @@
+
+> @workspace/maze-game@0.0.0 dev /home/runner/workspace/artifacts/maze-game
+> vite --config vite.config.ts --host 0.0.0.0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J
+  [32m[1mVITE[22m v7.3.1[39m  [2mready in [0m[1m1393[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m20143[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://172.31.82.66:[1m20143[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:25:14 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/Instructions.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:27:18 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:30:35 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/Screens.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:37:30 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/MathGate.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:38:03 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/Collectible.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:38:15 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/GameScene.tsx, /src/ui/Screens.tsx, /src/ui/Instructions.tsx, /src/scene/MazeWalls.tsx, /src/scene/PlayerController.tsx, /src/scene/MathGate.tsx, /src/ui/HUD.tsx, /src/ui/Compass.tsx, /src/ui/MiniMap.tsx, /src/scene/Collectible.tsx, /src/scene/WallTorchGLTF.tsx[22m
+[2m10:38:17 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/scene/GameScene.tsx[22m Could not Fast Refresh ("getTorchPlacements" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m10:38:17 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:38:30 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/GameScene.tsx, /src/ui/Screens.tsx, /src/ui/Instructions.tsx, /src/scene/MazeWalls.tsx, /src/scene/PlayerController.tsx, /src/scene/MathGate.tsx, /src/ui/HUD.tsx, /src/ui/Compass.tsx, /src/ui/MiniMap.tsx, /src/scene/Collectible.tsx, /src/scene/WallTorchGLTF.tsx[22m
+[2m10:38:31 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/scene/GameScene.tsx[22m Could not Fast Refresh ("getTorchPlacements" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m10:38:31 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:38:38 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/GameScene.tsx[22m
+[2m10:38:39 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/scene/GameScene.tsx[22m Could not Fast Refresh ("getTorchPlacements" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m10:38:39 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:38:55 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/GameScene.tsx[22m
+[2m10:38:55 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/scene/GameScene.tsx[22m Could not Fast Refresh ("getTorchPlacements" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m10:38:55 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx[22m
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774607935973,"name":"Error","message":"addScore is not defined","stack":"    at GameScene /home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx:363:7\n\n\n\n\n\n\n\n\n","loc":{"line":363,"column":7,"file":"/home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx"},"frame":"361|        addScore(50);\n362|      }\n363|    }, [addScore, collectItem, incrementStreak, setFeedback, addTime]);\n   |        ^\n364|  \n365|    const handleMathGateCollect = useCallback((value: number, onPath: boolean) => {"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774607936491,"name":"Error","message":"addScore is not defined","stack":"    at GameScene /home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx:363:7\n\n\n\n\n\n\n\n\n","loc":{"line":363,"column":7,"file":"/home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx"},"frame":"361|        addScore(50);\n362|      }\n363|    }, [addScore, collectItem, incrementStreak, setFeedback, addTime]);\n   |        ^\n364|  \n365|    const handleMathGateCollect = useCallback((value: number, onPath: boolean) => {"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:39:10 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/GameScene.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:39:25 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/GameScene.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:39:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/GameScene.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:39:44 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/GameScene.tsx, /src/scene/PlayerController.tsx, /src/ui/HUD.tsx, /src/scene/Collectible.tsx[22m
+[2m10:39:45 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/scene/GameScene.tsx[22m Could not Fast Refresh ("getTorchPlacements" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m10:39:45 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx[22m
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774607985425,"name":"Error","message":"addScore is not defined","stack":"    at GameScene /home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx:410:39\n\n\n\n\n\n\n\n\n","loc":{"line":410,"column":39,"file":"/home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx"},"frame":"408|      const id = setInterval(checkExit, 100);\n409|      return () => clearInterval(id);\n410|    }, [mazeData, screen, exitX, exitZ, addScore, setScreen, setFeedback, setPortalLocked]);\n   |                                        ^\n411|  \n412|    const theme = useMemo(() => getThemeForLevel(level), [level]);"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774607985464,"name":"Error","message":"addScore is not defined","stack":"    at GameScene /home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx:410:39\n\n\n\n\n\n\n\n\n","loc":{"line":410,"column":39,"file":"/home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx"},"frame":"408|      const id = setInterval(checkExit, 100);\n409|      return () => clearInterval(id);\n410|    }, [mazeData, screen, exitX, exitZ, addScore, setScreen, setFeedback, setPortalLocked]);\n   |                                        ^\n411|  \n412|    const theme = useMemo(() => getThemeForLevel(level), [level]);"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774607985481,"name":"Error","message":"addScore is not defined","stack":"    at GameScene /home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx:410:39\n\n\n\n\n\n\n\n\n","loc":{"line":410,"column":39,"file":"/home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx"},"frame":"408|      const id = setInterval(checkExit, 100);\n409|      return () => clearInterval(id);\n410|    }, [mazeData, screen, exitX, exitZ, addScore, setScreen, setFeedback, setPortalLocked]);\n   |                                        ^\n411|  \n412|    const theme = useMemo(() => getThemeForLevel(level), [level]);"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774607986484,"name":"Error","message":"addScore is not defined","stack":"    at GameScene /home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx:410:39\n\n\n\n\n\n\n\n\n","loc":{"line":410,"column":39,"file":"/home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx"},"frame":"408|      const id = setInterval(checkExit, 100);\n409|      return () => clearInterval(id);\n410|    }, [mazeData, screen, exitX, exitZ, addScore, setScreen, setFeedback, setPortalLocked]);\n   |                                        ^\n411|  \n412|    const theme = useMemo(() => getThemeForLevel(level), [level]);"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m10:40:02 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/scene/GameScene.tsx[22m
+[2m10:40:02 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/scene/GameScene.tsx[22m Could not Fast Refresh ("getTorchPlacements" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m10:40:02 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx[22m
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774608002867,"name":"Error","message":"addScore is not defined","stack":"    at GameScene /home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx:410:39\n\n\n\n\n\n\n\n\n","loc":{"line":410,"column":39,"file":"/home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx"},"frame":"408|      const id = setInterval(checkExit, 100);\n409|      return () => clearInterval(id);\n410|    }, [mazeData, screen, exitX, exitZ, addScore, setScreen, setFeedback, setPortalLocked]);\n   |                                        ^\n411|  \n412|    const theme = useMemo(() => getThemeForLevel(level), [level]);"}
+[RUNTIME_ERROR]{"type":"runtime-error","timestamp":1774608003459,"name":"Error","message":"addScore is not defined","stack":"    at GameScene /home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx:410:39\n\n\n\n\n\n\n\n\n","loc":{"line":410,"column":39,"file":"/home/runner/workspace/artifacts/maze-game/src/scene/GameScene.tsx"},"frame":"408|      const id = setInterval(checkExit, 100);\n409|      return () => clearInterval(id);\n410|    }, [mazeData, screen, exitX, exitZ, addScore, setScreen, setFeedback, setPortalLocked]);\n   |                                        ^\n411|  \n412|    const theme = useMemo(() => getThemeForLevel(level), [level]);"}
+[41m[30m ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL [39m[49m [31m@workspace/maze-game@0.0.0 dev: `vite --config vite.config.ts --host 0.0.0.0`[39m
+[31mCommand failed with signal "SIGTERM"[39m
