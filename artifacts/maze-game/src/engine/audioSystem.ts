@@ -53,6 +53,12 @@ function getMaster(): GainNode {
   return masterGain!;
 }
 
+export function warmUpAudio() {
+  try {
+    getCtx();
+  } catch (_) {}
+}
+
 export function updateMasterVolume() {
   const { muted, volume } = useAudioState.getState();
   if (masterGain) {

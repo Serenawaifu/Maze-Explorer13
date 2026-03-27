@@ -1,6 +1,6 @@
 # Overview
 
-This project is a pnpm workspace monorepo utilizing TypeScript, designed for building a robust and scalable application ecosystem. It comprises a high-performance Express API server, a 3D first-person maze game, and shared libraries for database interactions, API specifications, and code generation.
+This project is a pnpm workspace monorepo designed for building a robust and scalable application ecosystem. It features a high-performance Express API server, a 3D first-person maze game, and shared libraries for database interactions, API specifications, and code generation. The project aims to provide an engaging game experience while demonstrating a well-architected TypeScript monorepo.
 
 # User Preferences
 
@@ -8,39 +8,37 @@ I prefer iterative development and expect the agent to ask before making major c
 
 # System Architecture
 
-The project is structured as a pnpm monorepo with TypeScript, using `composite: true` for efficient cross-package type-checking. Each package manages its own dependencies and extends a shared `tsconfig.base.json`. Root scripts facilitate building and type-checking across the entire workspace.
+The project is structured as a pnpm monorepo with TypeScript, using `composite: true` for efficient cross-package type-checking.
 
 **UI/UX Decisions:**
-The `maze-game` artifact focuses on an immersive 3D first-person experience.
-- **Visuals:** Features 6 fundamentally distinct terrain types, each with unique visual identity, **per-theme wall geometry** (wallHeight, wallThickness), unique maze generation algorithm, and dramatically different layout character: Stone Dungeon (wallHeight=4.8/wallThickness=1.0, deeply textured stone bricks with moss/cracks/beveled edges, dark cobblestone floor, near-black ceiling, very dim amber torchlight, fogNear=1/fogFar=16, recursive-backtracker 3% extra passages — extremely claustrophobic with long winding dead-end corridors), Overgrown Hedge (wallHeight=2.2/wallThickness=1.4, multi-layered leafy walls with depth/flowers/vine detail, grass floor with blades, open sky ceiling with clouds, bright sunlight, fogNear=8/fogFar=45, Prim's 12% extra passages — short thick hedges you almost peer over, organic branching garden maze), Backrooms (wallHeight=3.0/wallThickness=0.3, stained yellowed panels with edge lighting/watermarks, carpet floor, fluorescent drop-ceiling with light panels, close eerie yellow fog, fogNear=3/fogFar=14, recursive-backtracker 28% extra passages — paper-thin drywall creating disorienting open-plan liminal spaces with many loops), Voxel Arena (wallHeight=3.8/wallThickness=0.8, 8-color chunky blocks with beveled edges/highlights, grid floor, clean bright ceiling, wide crisp visibility, fogNear=10/fogFar=50, rooms-and-corridors algorithm 6% extra passages — open rectangular rooms connected by corridors creating arena-style layout), Candy World (wallHeight=2.0/wallThickness=0.9, 7-color pastel diagonal stripes with sprinkle dots/gloss, checkered candy floor, wafer ceiling, dreamy pink fog, fogNear=5/fogFar=28, Kruskal's 15% extra passages — short bouncy walls with whimsical exploratory layout). Each theme has per-theme wallHeight, wallThickness, wallRoughness, wallMetalness, floorRoughness, wallMortarColor, ceilingTileFn, and fog near/far distances. Wall geometry is propagated through rendering (MazeWalls.tsx), collision (PlayerController.tsx), torch placement (GameScene.tsx), and ceiling height.
-- **Desktop Only:** Mobile devices are blocked with a "Desktop Only" screen. The game requires keyboard + mouse. No touch controls.
-- **HUD:** Polished responsive HUD using CSS `clamp()` for scaling. Glassmorphism panels (borderRadius 18px) with gradient backgrounds, colored top accent lines, subtle inner glow, and backdrop blur. Shows Level (with terrain name), Score (with gold glow), Time countdown (pulses red when critical <=10s, orange warning <=30s), and Oranges count (with progress bar). Gap-style crosshair with glow. Volume control (bottom-left, pill shape). Pause button (bottom-right, pill shape with pause icon). Compass bar at bottom:38px center. No instruction text bar (removed). No Path Sum display (removed). HUD columns use `flexShrink:1, minWidth:0` for narrow-screen collapse. StreakDisplay positioned at `top:clamp(100px,14vh,140px)` to clear HUD bar.
-- **Pause System:** `"paused"` game screen state with full pause overlay. PauseButton in bottom-right HUD triggers pause and releases pointer lock. PauseOverlay shows "PAUSED" title, green Resume button (re-acquires pointer lock), red Exit Game button (immediately sends to Game Over screen). ESC key pauses during gameplay and resumes during pause. Pointer lock loss during gameplay auto-triggers pause. Timer freezes while paused.
-- **Instructions Screen (`Instructions.tsx`):** 4-slide tutorial screen shown between Start and Playing. Slides: 1) Movement & Controls (CSS-rendered WASD key caps, mouse icon, ESC key), 2) Your Mission (collectible/portal/timer icons, bonus gems), 3) Reading Your HUD (annotated HUD mockup diagram), 4) Pro Tips (streak multiplier, dead ends, math gates, time pickups). All icons are styled HTML/CSS — no emoji. Navigation: Next/Back buttons, dot indicators (active dot wider), step counter. "SKIP" button always visible top-right. Final slide shows "Start Game". State resets to slide 1 on each entry via useEffect. Flow: `startGame()` → `screen:"instructions"` → `beginPlaying()` → `screen:"playing"`.
-- **Screens:** Cinematic start screen with scrollable viewport (`overflowY:auto`), flexible title area (`flex:1 1 auto`), responsive title font (`clamp(40px,8vw,100px)`), responsive button padding, and `clamp()`-based spacing throughout. Game Over/Level Complete/Victory screens use shared `overlayBase` with `overflowY:auto` and `WebkitOverflowScrolling:touch` for scrollability on short viewports, `clamp()`-based vertical padding, `margin:auto 0` centering, and responsive stat card/button sizing.
-- **UI Components:** GameButton supports 4 variants (default/primary/danger/ghost) with hover shine animation, press scale-down, gradient backgrounds, glow effects, and responsive padding/font via `clamp()`. StatCard has glassmorphism panels with top accent line, floating icon animation, count-up entrance animation, and responsive sizing (`clamp()` for padding, minWidth, font). ScreenDivider uses responsive width/margin via `clamp()`.
-- **MiniMap:** Bottom-right, fixed 120px size, fog of war reveal, shows exit/player arrow only. Click to expand (1.8x).
+The `maze-game` is a desktop-only, first-person 3D experience.
+- **Visuals:** Features 6 distinct terrain themes (e.g., Stone Dungeon, Overgrown Hedge) each with unique wall geometry, textures, lighting, fog effects, and maze generation algorithms.
+- **HUD:** A polished, responsive glassmorphism HUD displays Level, Score, Time countdown, and Oranges count. Includes a gap-style crosshair, volume control, pause button, and compass bar.
+- **Pause System:** A comprehensive pause overlay with Resume and Exit options, triggered by the Pause button or ESC key.
+- **Instructions Screen:** A 4-slide tutorial (`Instructions.tsx`) guides the player through movement, objectives, HUD interpretation, and pro tips before gameplay.
+- **Screens:** Cinematic start, game over, level complete, and victory screens utilize responsive design with `clamp()` for spacing and sizing.
+- **UI Components:** Reusable components like `GameButton` (with variants and animations) and `StatCard` (glassmorphism, animations) are used throughout the UI.
+- **MiniMap:** A bottom-right minimap with fog of war, expandable on click.
 
 **Technical Implementations:**
-- **API Server (`artifacts/api-server`):** An Express 5 server handling API requests. Uses `@workspace/api-zod` for validation and `@workspace/db` for persistence. Built with esbuild into a CJS bundle.
-- **Maze Game (`artifacts/maze-game`):** A frontend-only, first-person 3D maze game built with React, Vite, Three.js (via React Three Fiber), and Zustand for state management. Source organized into `engine/` (pure game logic), `scene/` (3D R3F components), and `ui/` (2D overlay components).
-    - **Game Logic:** Seven screen states: start, instructions, playing, paused, levelComplete, gameOver, victory. All levels use Randomized Depth-First Search (Recursive Backtracker) for dense, deep mazes with long winding corridors, low branching factor, and high path complexity. Extra passage rates kept very low (1-2%) to minimize shortcuts. 6 levels with increasing sizes (18x18 to 42x42). **Randomized level selection** — `startGame` picks a random level (1-6) each time, `nextLevel` picks a random different level and tracks `levelsCompleted` for victory after completing all 6. **Randomized start/exit positions** — start picks a random corner, exit picks a random edge cell far from start. Score, timer, collectible "oranges" (normal/bonus gold octahedra/time pickups). HUD displays "🍊 X/Y Oranges" counter. Procedural Web Audio API sound engine.
-    - **Flow Theory Mechanics:** Dead-end detection with red vignette flash (resets streak), streak multiplier for consecutive gem pickups (up to 3x), feedback overlay for game events. Variable ratio reinforcement via random bonus gems and time pickups.
-    - **Path-Sum Math Gates (Mandatory Gating):** Floating numbered orbs placed along the solution path with off-path decoy gates (purple). The portal exit is **locked** until the player collects exactly the target sum — this is a mandatory mechanic, not optional. Collecting decoy (off-path) gates adds to the sum and can cause it to exceed the target, sealing the portal permanently for that run. Portal visually changes color: orange (in progress), green (sum matched + gems collected), red (sum exceeded). Compass exit marker also reflects portal state. HUD shows running sum vs target with progress bar and "Portal Locked/Open/Sealed" status. Active from L2 onward with increasing gate counts (0/3/5/7/9). This implements the Path-Sum Maze formula: Σ(p∈Path) n_i = T.
-    - **Player Controller:** First-person pointer-lock camera (desktop only), WASD movement with independent-axis collision detection, flashlight, footstep audio, screen shake, dust particles.
-    - **PCG (Procedural Content Generation) (`pcg.ts`):** Poisson Disk Sampling (Bridson's algorithm) for anti-clump object placement. Applied to: wall torch placement (minimum distance = 2.5 cells, count scales by maze area at 12%), collectible/orange placement (dynamic spacing based on maze density), and math gate decoy placement (minimum 3-cell spacing). Ensures natural-feeling distribution with no clustering.
-    - **Collision System:** `PLAYER_RADIUS=0.6` with multi-pass (3 iterations) unified collision resolution. Corner pillar collision boxes at every wall junction prevent corner clipping. Minimum-penetration-axis push-back for inside-box edge cases. Spatial grid for O(1) wall lookups.
-    - **Wall Geometry:** Wall segments use exact `CELL_SIZE` length. Corner pillar boxes fill junction gaps via a second `instancedMesh` with a separate material that uses `polygonOffset` (factor=1, units=1) to push pillars back in the depth buffer, preventing z-fighting. Pillars are also shrunk by 0.01 units to break coplanarity with wall faces. The `getCornerPillars()` function deduplicates positions. Collision boxes in PlayerController include matching corner pillar AABBs. Player lantern (point light following camera) provides warm ambient illumination.
-    - **Loading Screen:** A dedicated "loading" state between instructions and gameplay. Canvas renders at `zIndex: -1` behind the loading overlay (not `opacity: 0`) so the GPU actually processes the scene during loading. A `SceneReady` component inside the Canvas calls `gl.compile(scene, camera)` to force all shader pre-compilation, then waits 10 additional frames for texture upload before calling `finishLoading()`. 8-second safety timeout. Also applies between levels via `nextLevel()`. The `LoadingScreen` component lives in `Screens.tsx`.
-    - **Performance:** `getState()` for high-frequency state reads, module-level texture caching, proximity-based light culling (max 10 flame torches), optimized mini-map redraws (200ms interval), pre-allocated THREE.js objects, spatial grid for O(1) wall collision lookups, Zustand state update throttling with epsilon thresholds. **Pooled flame effects:** `NearbyFlameEffects` pre-mounts `MAX_FLAME_TORCHES` (10) `PooledFlameSlot` components on initial render, controlled entirely via refs (position + opacity) — zero React re-renders during gameplay. Slot-to-torch assignment managed in `useFrame` callback. All flame materials (Billboard sprites, fire particles, point lights) are present in the scene during loading so `gl.compile()` captures their shader programs.
-    - **Removed Features:** Enemies, boss fights, traps, fog zones, lore system, shop/meta-progression, leaderboard, difficulty selection, health/damage system, power-ups have all been removed. The game is now purely exploration + gem collection + reaching the exit portal.
-    - **GLTF Dungeon Torch Models (`WallTorchGLTF.tsx`):** Wall torches use a detailed GLTF 3D model (`public/models/torch.gltf`) with PBR textures (albedo, normal, roughness, AO, metallic, emissive maps for both torch bracket and coal). Full flame system matching the DungeonFlame reference: dual-layer Billboard sprites (outer flame + inner glow core), fire particles (embers rising), and integrated flickering point lights — all per torch. **Cinematic flame ignition:** slow fade-in (0.5 speed, ~2s to full) and fade-out (0.8 speed, ~1.25s). **Wall-aware line-of-sight:** flames only activate when the player has an unobstructed path through the maze grid (DDA ray-walk through cells checking wall boundaries, with diagonal corner resolution). Torches behind walls stay dark. Proximity-based: activate within 10 units, deactivate beyond 12 units. All opacity updates use refs (no per-frame React state) for performance. Max 10 flame-active torches at once. Torch placements computed once per maze. The GLTF model's flame bone position is detected via `getLocalPositionInScene()` and original flame meshes are hidden. Loaded via `@react-three/drei` `useGLTF`.
-    - **Bundle Optimization:** Production build uses manual chunks to split `three` and `@react-three/fiber` into separate cacheable chunks. Runtime dependencies: `three`, `@react-three/fiber`, `@react-three/drei`, and `zustand`.
+- **API Server (`artifacts/api-server`):** An Express 5 server integrated with `@workspace/api-zod` for validation and `@workspace/db` for persistence, bundled with esbuild.
+- **Maze Game (`artifacts/maze-game`):** A frontend React, Vite, Three.js (via React Three Fiber) game using Zustand for state management.
+    - **Game Logic:** Seven screen states manage the game flow. Levels are generated using Randomized Depth-First Search with low extra passage rates, increasing in size across 6 levels. Features randomized level and start/exit position selection, collectible "oranges," and a procedural Web Audio API sound engine.
+    - **Flow Theory Mechanics:** Implements dead-end detection, a streak multiplier for pickups, and variable ratio reinforcement via bonus items.
+    - **Path-Sum Math Gates:** Mandatory math gates along the solution path require players to collect a target sum to unlock the exit portal. Decoy gates exist off-path. Active from Level 2.
+    - **Player Controller:** First-person pointer-lock camera, WASD movement, independent-axis collision, flashlight, footstep audio, screen shake, and dust particles.
+    - **PCG (Procedural Content Generation):** Uses Poisson Disk Sampling for anti-clump placement of torches, collectibles, and math gate decoys.
+    - **Collision System:** Robust collision detection with `PLAYER_RADIUS=0.6`, multi-pass resolution, corner pillar collision boxes, and a spatial grid for O(1) wall lookups.
+    - **Wall Geometry:** Exact `CELL_SIZE` segments, with corner pillars to prevent z-fighting, and a player lantern for dynamic lighting.
+    - **Loading Screen:** A dedicated loading state with forced shader pre-compilation (`gl.compile`) and an 8-second safety timeout.
+    - **Performance:** Achieved through `getState()` for high-frequency reads, texture caching, proximity-based light culling, optimized mini-map redraws, pre-allocated THREE.js objects, spatial grids, Zustand update throttling, pooled flame effects, ref-based collection tracking, batched Zustand updates, and audio pre-initialization.
+    - **GLTF Dungeon Torch Models:** Detailed GLTF models with PBR textures and full flame systems (sprites, particles, flickering lights). Features cinematic flame ignition and wall-aware line-of-sight activation.
+    - **Bundle Optimization:** Production builds use manual chunks to optimize loading of core libraries like `three` and `@react-three/fiber`.
 
 **System Design Choices:**
-- **Monorepo:** pnpm workspaces facilitate shared libraries and consistent tooling.
+- **Monorepo:** pnpm workspaces for shared libraries and consistent tooling.
 - **TypeScript:** Ensures type safety across all packages.
-- **Database:** PostgreSQL with Drizzle ORM for schema definition and database interactions.
+- **Database:** PostgreSQL with Drizzle ORM.
 - **API Code Generation:** Orval generates React Query hooks and Zod schemas from an OpenAPI specification.
 
 # External Dependencies
@@ -48,17 +46,17 @@ The `maze-game` artifact focuses on an immersive 3D first-person experience.
 - **Node.js**: Version 24
 - **pnpm**: Package manager
 - **TypeScript**: Version 5.9
-- **Express**: Version 5 (API framework)
+- **Express**: Version 5
 - **PostgreSQL**: Database
-- **Drizzle ORM**: ORM for database interactions
-- **Zod**: Validation library (`zod/v4`)
+- **Drizzle ORM**: For database interactions
+- **Zod**: Validation library
 - **drizzle-zod**: Zod integration for Drizzle
 - **Orval**: OpenAPI code generator
-- **esbuild**: Bundler (for CJS output)
+- **esbuild**: Bundler
 - **React**: UI library
-- **Vite**: Frontend build tool (for `maze-game`)
-- **Three.js**: 3D graphics library (via React Three Fiber)
+- **Vite**: Frontend build tool
+- **Three.js**: 3D graphics library
 - **@react-three/fiber**: React renderer for Three.js
 - **Zustand**: State management library
-- **CORS**: Middleware for Express
+- **CORS**: Express middleware
 - **pg**: PostgreSQL client

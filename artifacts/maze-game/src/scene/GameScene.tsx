@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect, useRef, useState } from "react";
+import { useMemo, useCallback, useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { generateMaze, getCollectiblePositions, isDeadEnd } from "../engine/mazeGenerator";
@@ -18,6 +18,7 @@ import {
   playLevelComplete,
   playVictoryFanfare,
   playGameOver,
+  warmUpAudio,
 } from "../engine/audioSystem";
 import { WallTorchGLTFModels } from "./WallTorchGLTF";
 
@@ -271,28 +272,28 @@ export function GameScene() {
   const screen = useGameState((s) => s.screen);
   const level = useGameState((s) => s.level);
   const runId = useGameState((s) => s.runId);
-  const addScore = useGameState((s) => s.addScore);
-  const collectItem = useGameState((s) => s.collectItem);
   const setScreen = useGameState((s) => s.setScreen);
   const getLevelConfig = useGameState((s) => s.getLevelConfig);
-  const incrementStreak = useGameState((s) => s.incrementStreak);
-  const addMathGateValue = useGameState((s) => s.addMathGateValue);
   const setTargetMathSum = useGameState((s) => s.setTargetMathSum);
-  const setFeedback = useGameState((s) => s.setFeedback);
-  const addTime = useGameState((s) => s.addTime);
+  const batchCollectGem = useGameState((s) => s.batchCollectGem);
+  const batchCollectBonus = useGameState((s) => s.batchCollectBonus);
+  const batchCollectTime = useGameState((s) => s.batchCollectTime);
+  const batchCollectMathGate = useGameState((s) => s.batchCollectMathGate);
 
   const finishLoading = useGameState((s) => s.finishLoading);
 
   const config = getLevelConfig();
   const isActive = screen !== "start" && screen !== "instructions" && screen !== "gameOver" && screen !== "victory";
   const prevScreenRef = useRef(screen);
-  const [collectedItems, setCollectedItems] = useState<Set<number>>(new Set());
+  const collectedItemsRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     if (screen === "playing") {
       startAmbient();
-      setCollectedItems(new Set());
-    } else if (screen !== "loading") {
+      collectedItemsRef.current = new Set();
+    } else if (screen === "loading") {
+      warmUpAudio();
+    } else {
       stopAmbient();
     }
   }, [screen]);
@@ -346,43 +347,24 @@ export function GameScene() {
 
   const handleCollect = useCallback((index: number, type: "normal" | "bonus" | "time") => {
     if (useGameState.getState().screen !== "playing") return;
-    setCollectedItems((prev) => new Set(prev).add(index));
+    collectedItemsRef.current.add(index);
 
     if (type === "normal") {
-      addScore(POINTS_PER_ITEM);
-      collectItem();
-      incrementStreak();
+      batchCollectGem(POINTS_PER_ITEM, true);
     } else if (type === "bonus") {
-      addScore(BONUS_POINTS);
-      setFeedback("Bonus Orange! +300");
-      incrementStreak();
+      batchCollectBonus(BONUS_POINTS, "Bonus Orange! +300");
     } else if (type === "time") {
-      addTime(TIME_PICKUP_SECONDS);
-      setFeedback(`+${TIME_PICKUP_SECONDS}s Time!`);
-      addScore(50);
+      batchCollectTime(TIME_PICKUP_SECONDS, 50, `+${TIME_PICKUP_SECONDS}s Time!`);
     }
-  }, [addScore, collectItem, incrementStreak, setFeedback, addTime]);
+  }, [batchCollectGem, batchCollectBonus, batchCollectTime]);
 
   const handleMathGateCollect = useCallback((value: number, onPath: boolean) => {
-    const state = useGameState.getState();
-    const newSum = state.mathSum + value;
-    addMathGateValue(value);
-    addScore(value * 20);
-    if (!onPath) {
-      if (newSum > state.targetMathSum) {
-        setFeedback(`Decoy! Sum Exceeded`);
-      } else {
-        setFeedback(`+${value} Sum (Decoy!)`);
-      }
-    } else {
-      setFeedback(`+${value} Sum`);
-    }
-  }, [addMathGateValue, addScore, setFeedback]);
+    batchCollectMathGate(value, onPath);
+  }, [batchCollectMathGate]);
 
   const exitX = mazeData ? mazeData.end.x * CELL_SIZE : 0;
   const exitZ = mazeData ? mazeData.end.y * CELL_SIZE : 0;
 
-  const setPortalLocked = useGameState((s) => s.setPortalLocked);
   const portalRejectCooldown = useRef(0);
 
   useEffect(() => {
@@ -399,32 +381,32 @@ export function GameScene() {
 
       if (dist < 3.0 && state.targetMathSum > 0 && !mathSumMet) {
         if (!state.portalLocked) {
-          setPortalLocked(true);
+          state.setPortalLocked(true);
         }
       } else if (state.portalLocked && dist >= 3.0) {
-        setPortalLocked(false);
+        state.setPortalLocked(false);
       }
 
       if (dist < 1.5 && gemsCollected && mathSumMet) {
         const timeBonus = Math.floor(state.timeRemaining * 5);
         const mathBonus = state.targetMathSum > 0 ? 500 : 0;
-        addScore(timeBonus + 500 + mathBonus);
+        state.addScore(timeBonus + 500 + mathBonus);
         setScreen("levelComplete");
       } else if (dist < 1.5 && gemsCollected && !mathSumMet) {
         const now = Date.now();
         if (now - portalRejectCooldown.current > 3000) {
           portalRejectCooldown.current = now;
           if (state.mathSum > state.targetMathSum) {
-            setFeedback("Sum Exceeded! Portal Sealed");
+            state.setFeedback("Sum Exceeded! Portal Sealed");
           } else {
-            setFeedback(`Path Sum Needed: ${state.mathSum}/${state.targetMathSum}`);
+            state.setFeedback(`Path Sum Needed: ${state.mathSum}/${state.targetMathSum}`);
           }
         }
       }
     };
     const id = setInterval(checkExit, 100);
     return () => clearInterval(id);
-  }, [mazeData, screen, exitX, exitZ, addScore, setScreen, setFeedback, setPortalLocked]);
+  }, [mazeData, screen, exitX, exitZ, setScreen]);
 
   const theme = useMemo(() => getThemeForLevel(level), [level]);
   const torchPlacements = useMemo(() => mazeData ? getTorchPlacements(mazeData, theme.wallThickness, theme.wallHeight) : [], [mazeData, theme.wallThickness, theme.wallHeight]);
@@ -495,7 +477,7 @@ export function GameScene() {
         level={level}
         exitPosition={{ x: exitX, z: exitZ }}
         collectiblePositions={collectiblePositions}
-        collectedItems={collectedItems}
+        collectedItems={collectedItemsRef.current}
       />
     </>
   );

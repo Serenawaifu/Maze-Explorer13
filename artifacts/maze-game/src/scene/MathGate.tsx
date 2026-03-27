@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useGameState } from "../engine/gameState";
@@ -55,9 +55,11 @@ function createNumberTexture(value: number, onPath: boolean): THREE.CanvasTextur
 
 export function MathGateComponent({ gate, onCollect }: MathGateProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const [collected, setCollected] = useState(false);
-  const [flashOpacity, setFlashOpacity] = useState(0);
-  const flashTimer = useRef(0);
+  const flashMeshRef = useRef<THREE.Mesh>(null);
+  const collectedRef = useRef(false);
+  const flashTimerRef = useRef(0);
+  const doneRef = useRef(false);
+  const gateGroupRef = useRef<THREE.Group>(null);
 
   const texture = useMemo(() => createNumberTexture(gate.value, gate.onPath), [gate.value, gate.onPath]);
 
@@ -85,14 +87,32 @@ export function MathGateComponent({ gate, onCollect }: MathGateProps) {
     emissiveIntensity: 0.5,
   }), [texture, lightColor]);
 
+  const flashMat = useMemo(() => new THREE.MeshStandardMaterial({
+    color: "#66bbff",
+    emissive: "#44aaff",
+    emissiveIntensity: 3,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+  }), []);
+
   useFrame((_, delta) => {
-    if (collected) {
-      if (flashOpacity > 0) {
-        flashTimer.current += delta;
-        setFlashOpacity(Math.max(0, 1 - flashTimer.current * 3));
+    if (doneRef.current) return;
+
+    if (collectedRef.current) {
+      flashTimerRef.current += delta;
+      const opacity = Math.max(0, 1 - flashTimerRef.current * 3);
+      flashMat.opacity = opacity * 0.6;
+      if (flashMeshRef.current) {
+        flashMeshRef.current.visible = opacity > 0;
+      }
+      if (opacity <= 0) {
+        doneRef.current = true;
+        if (groupRef.current) groupRef.current.visible = false;
       }
       return;
     }
+
     if (!groupRef.current) return;
 
     const t = performance.now() * 0.001;
@@ -105,53 +125,41 @@ export function MathGateComponent({ gate, onCollect }: MathGateProps) {
     const dist = Math.sqrt(dx * dx + dz * dz);
 
     if (dist < 2.0) {
-      setCollected(true);
-      setFlashOpacity(1);
-      flashTimer.current = 0;
+      collectedRef.current = true;
+      flashTimerRef.current = 0;
+      flashMat.opacity = 0.6;
+      if (gateGroupRef.current) gateGroupRef.current.visible = false;
+      if (flashMeshRef.current) flashMeshRef.current.visible = true;
       onCollect(gate.value, gate.onPath);
     }
   });
 
-  if (collected && flashOpacity <= 0) return null;
-
   return (
     <group ref={groupRef} position={[gate.worldX, 1.2, gate.worldZ]}>
-      {!collected && (
-        <>
-          <mesh material={ringMat} rotation={[0, 0, 0]}>
-            <torusGeometry args={[0.6, 0.04, 8, 24]} />
-          </mesh>
-          <mesh material={ringMat} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[0.6, 0.03, 8, 24]} />
-          </mesh>
-          <mesh material={numberMat}>
-            <planeGeometry args={[1.0, 1.0]} />
-          </mesh>
-          <mesh material={numberMat} rotation={[0, Math.PI, 0]}>
-            <planeGeometry args={[1.0, 1.0]} />
-          </mesh>
-          <pointLight
-            position={[0, 0, 0]}
-            color={lightColor}
-            intensity={2}
-            distance={8}
-            decay={2}
-          />
-        </>
-      )}
-      {collected && flashOpacity > 0 && (
-        <mesh>
-          <sphereGeometry args={[0.8, 16, 16]} />
-          <meshStandardMaterial
-            color="#66bbff"
-            emissive="#44aaff"
-            emissiveIntensity={3}
-            transparent
-            opacity={flashOpacity * 0.6}
-            depthWrite={false}
-          />
+      <group ref={gateGroupRef}>
+        <mesh material={ringMat} rotation={[0, 0, 0]}>
+          <torusGeometry args={[0.6, 0.04, 8, 24]} />
         </mesh>
-      )}
+        <mesh material={ringMat} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.6, 0.03, 8, 24]} />
+        </mesh>
+        <mesh material={numberMat}>
+          <planeGeometry args={[1.0, 1.0]} />
+        </mesh>
+        <mesh material={numberMat} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[1.0, 1.0]} />
+        </mesh>
+        <pointLight
+          position={[0, 0, 0]}
+          color={lightColor}
+          intensity={2}
+          distance={8}
+          decay={2}
+        />
+      </group>
+      <mesh ref={flashMeshRef} visible={false} material={flashMat}>
+        <sphereGeometry args={[0.8, 16, 16]} />
+      </mesh>
     </group>
   );
 }

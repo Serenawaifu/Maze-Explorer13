@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from "react";
+import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { playPickup } from "../engine/audioSystem";
@@ -42,9 +42,12 @@ const GEM_CONFIGS = {
 export function Collectible({ position, onCollect, type = "normal" }: CollectibleProps) {
   const groupRef = useRef<THREE.Group>(null);
   const sparkleRef = useRef<THREE.Points>(null);
-  const [collected, setCollected] = useState(false);
-  const [showSparkle, setShowSparkle] = useState(false);
+  const gemGroupRef = useRef<THREE.Group>(null);
+  const glowRef = useRef<THREE.Mesh>(null);
+  const collectedRef = useRef(false);
+  const sparkleActiveRef = useRef(false);
   const sparkleTimerRef = useRef(0);
+  const doneRef = useRef(false);
 
   const config = GEM_CONFIGS[type];
 
@@ -93,7 +96,9 @@ export function Collectible({ position, onCollect, type = "normal" }: Collectibl
   }), [config]);
 
   useFrame((_, delta) => {
-    if (showSparkle && sparkleRef.current) {
+    if (doneRef.current) return;
+
+    if (sparkleActiveRef.current && sparkleRef.current) {
       sparkleTimerRef.current += delta;
       const geo = sparkleRef.current.geometry;
       const pos = geo.attributes.position as THREE.BufferAttribute;
@@ -107,19 +112,21 @@ export function Collectible({ position, onCollect, type = "normal" }: Collectibl
       pos.needsUpdate = true;
       sparkleMat.opacity = Math.max(0, 1 - sparkleTimerRef.current * 2);
       if (sparkleTimerRef.current > 0.6) {
-        setShowSparkle(false);
+        sparkleActiveRef.current = false;
+        doneRef.current = true;
+        if (sparkleRef.current) sparkleRef.current.visible = false;
       }
       return;
     }
 
-    if (collected) return;
-    if (!groupRef.current) return;
+    if (collectedRef.current) return;
+    if (!gemGroupRef.current) return;
 
     const t = performance.now() * 0.001;
     const rotSpeed = type === "bonus" ? 2.5 : 1.5;
-    groupRef.current.rotation.y += delta * rotSpeed;
+    gemGroupRef.current.rotation.y += delta * rotSpeed;
     const bobSpeed = type === "bonus" ? 3 : 2;
-    groupRef.current.position.y = 0.8 + Math.sin(t * bobSpeed + position.x * 10) * 0.1;
+    gemGroupRef.current.position.y = 0.8 + Math.sin(t * bobSpeed + position.x * 10) * 0.1;
 
     const playerPosition = useGameState.getState().playerPosition;
     const dx = playerPosition.x - position.x;
@@ -127,75 +134,70 @@ export function Collectible({ position, onCollect, type = "normal" }: Collectibl
     const dist = Math.sqrt(dx * dx + dz * dz);
 
     if (dist < 1.5) {
-      setCollected(true);
-      setShowSparkle(true);
+      collectedRef.current = true;
+      sparkleActiveRef.current = true;
       sparkleTimerRef.current = 0;
       sparkleMat.opacity = 1;
+      if (gemGroupRef.current) gemGroupRef.current.visible = false;
+      if (glowRef.current) glowRef.current.visible = false;
+      if (sparkleRef.current) sparkleRef.current.visible = true;
       playPickup();
       onCollect();
     }
   });
 
-  if (collected && !showSparkle) return null;
-
   const s = config.scale;
 
   return (
-    <>
-      {!collected && (
-        <>
-          <group ref={groupRef} position={[position.x, 0.8, position.z]} scale={[s, s, s]}>
-            {type === "time" ? (
-              <>
-                <mesh material={mainMaterial} rotation={[Math.PI / 4, 0, 0]}>
-                  <torusGeometry args={[0.2, 0.06, 8, 16]} />
-                </mesh>
-                <mesh material={mainMaterial}>
-                  <cylinderGeometry args={[0.02, 0.02, 0.25, 6]} />
-                </mesh>
-                <mesh position={[0, 0.05, 0]} material={mainMaterial}>
-                  <cylinderGeometry args={[0.02, 0.02, 0.15, 6]} />
-                </mesh>
-              </>
-            ) : type === "bonus" ? (
-              <mesh material={mainMaterial}>
-                <octahedronGeometry args={[0.28, 0]} />
-              </mesh>
-            ) : (
-              <>
-                <mesh material={mainMaterial}>
-                  <sphereGeometry args={[0.25, 16, 16]} />
-                </mesh>
-                <mesh position={[0, 0.28, 0]} material={stemMaterial}>
-                  <cylinderGeometry args={[0.02, 0.03, 0.1, 6]} />
-                </mesh>
-                <mesh position={[0.06, 0.3, 0]} rotation={[0, 0, -0.4]} material={leafMaterial}>
-                  <planeGeometry args={[0.12, 0.06]} />
-                </mesh>
-              </>
-            )}
-          </group>
-          <mesh position={[position.x, 0.02, position.z]} rotation={[-Math.PI / 2, 0, 0]}>
-            <circleGeometry args={[0.5 * s, 24]} />
-            <meshStandardMaterial
-              color={config.glowColor}
-              emissive={config.emissive}
-              emissiveIntensity={2.5}
-              transparent
-              opacity={0.35}
-              side={THREE.DoubleSide}
-              depthWrite={false}
-            />
+    <group ref={groupRef}>
+      <group ref={gemGroupRef} position={[position.x, 0.8, position.z]} scale={[s, s, s]}>
+        {type === "time" ? (
+          <>
+            <mesh material={mainMaterial} rotation={[Math.PI / 4, 0, 0]}>
+              <torusGeometry args={[0.2, 0.06, 8, 16]} />
+            </mesh>
+            <mesh material={mainMaterial}>
+              <cylinderGeometry args={[0.02, 0.02, 0.25, 6]} />
+            </mesh>
+            <mesh position={[0, 0.05, 0]} material={mainMaterial}>
+              <cylinderGeometry args={[0.02, 0.02, 0.15, 6]} />
+            </mesh>
+          </>
+        ) : type === "bonus" ? (
+          <mesh material={mainMaterial}>
+            <octahedronGeometry args={[0.28, 0]} />
           </mesh>
-        </>
-      )}
-      {showSparkle && (
-        <points ref={sparkleRef} position={[position.x, 0.8, position.z]} material={sparkleMat}>
-          <bufferGeometry>
-            <bufferAttribute attach="attributes-position" args={[sparkleData.positions, 3]} count={SPARKLE_COUNT} />
-          </bufferGeometry>
-        </points>
-      )}
-    </>
+        ) : (
+          <>
+            <mesh material={mainMaterial}>
+              <sphereGeometry args={[0.25, 16, 16]} />
+            </mesh>
+            <mesh position={[0, 0.28, 0]} material={stemMaterial}>
+              <cylinderGeometry args={[0.02, 0.03, 0.1, 6]} />
+            </mesh>
+            <mesh position={[0.06, 0.3, 0]} rotation={[0, 0, -0.4]} material={leafMaterial}>
+              <planeGeometry args={[0.12, 0.06]} />
+            </mesh>
+          </>
+        )}
+      </group>
+      <mesh ref={glowRef} position={[position.x, 0.02, position.z]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.5 * s, 24]} />
+        <meshStandardMaterial
+          color={config.glowColor}
+          emissive={config.emissive}
+          emissiveIntensity={2.5}
+          transparent
+          opacity={0.35}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+      <points ref={sparkleRef} visible={false} position={[position.x, 0.8, position.z]} material={sparkleMat}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[sparkleData.positions, 3]} count={SPARKLE_COUNT} />
+        </bufferGeometry>
+      </points>
+    </group>
   );
 }

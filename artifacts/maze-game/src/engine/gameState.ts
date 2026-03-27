@@ -115,6 +115,10 @@ interface GameState {
   tickFeedback: (delta: number) => void;
   addTime: (seconds: number) => void;
   setPortalLocked: (locked: boolean) => void;
+  batchCollectGem: (points: number, isNormal: boolean) => void;
+  batchCollectBonus: (points: number, feedbackMsg: string) => void;
+  batchCollectTime: (seconds: number, points: number, feedbackMsg: string) => void;
+  batchCollectMathGate: (value: number, onPath: boolean) => void;
 }
 
 export const useGameState = create<GameState>((set, get) => ({
@@ -324,4 +328,60 @@ export const useGameState = create<GameState>((set, get) => ({
   },
 
   setPortalLocked: (locked) => set({ portalLocked: locked }),
+
+  batchCollectGem: (points, isNormal) => {
+    const s = get();
+    const newCount = s.streakCount + 1;
+    const newMultiplier = 1 + Math.min(newCount * 0.25, 2.0);
+    const earned = Math.floor(points * s.streakMultiplier);
+    set({
+      score: s.score + earned,
+      collectiblesGathered: isNormal ? s.collectiblesGathered + 1 : s.collectiblesGathered,
+      streakCount: newCount,
+      streakMultiplier: newMultiplier,
+    });
+  },
+
+  batchCollectBonus: (points, feedbackMsg) => {
+    const s = get();
+    const newCount = s.streakCount + 1;
+    const newMultiplier = 1 + Math.min(newCount * 0.25, 2.0);
+    const earned = Math.floor(points * s.streakMultiplier);
+    set({
+      score: s.score + earned,
+      streakCount: newCount,
+      streakMultiplier: newMultiplier,
+      lastFeedback: feedbackMsg,
+      feedbackTimer: 2.5,
+    });
+  },
+
+  batchCollectTime: (seconds, points, feedbackMsg) => {
+    const s = get();
+    const earned = Math.floor(points * s.streakMultiplier);
+    set({
+      score: s.score + earned,
+      timeRemaining: s.timeRemaining + seconds,
+      lastFeedback: feedbackMsg,
+      feedbackTimer: 2.5,
+    });
+  },
+
+  batchCollectMathGate: (value, onPath) => {
+    const s = get();
+    const newSum = s.mathSum + value;
+    const earned = Math.floor(value * 20 * s.streakMultiplier);
+    let msg: string;
+    if (!onPath) {
+      msg = newSum > s.targetMathSum ? "Decoy! Sum Exceeded" : `+${value} Sum (Decoy!)`;
+    } else {
+      msg = `+${value} Sum`;
+    }
+    set({
+      mathSum: newSum,
+      score: s.score + earned,
+      lastFeedback: msg,
+      feedbackTimer: 2.5,
+    });
+  },
 }));
