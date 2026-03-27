@@ -867,32 +867,41 @@ export function InstructionsScreen() {
       <button
         onClick={skip}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.color = THEME.colors.text;
-          (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.15)";
+          const el = e.currentTarget as HTMLButtonElement;
+          el.style.color = "#fff";
+          el.style.borderColor = "rgba(210,136,42,0.5)";
+          el.style.background = "linear-gradient(135deg, rgba(210,136,42,0.2), rgba(180,110,30,0.1))";
+          el.style.boxShadow = "0 0 16px rgba(210,136,42,0.15), 0 2px 8px rgba(0,0,0,0.3)";
+          el.style.transform = "translateY(-1px)";
         }}
         onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.color = THEME.colors.textMuted;
-          (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.06)";
+          const el = e.currentTarget as HTMLButtonElement;
+          el.style.color = "rgba(255,255,255,0.55)";
+          el.style.borderColor = "rgba(255,255,255,0.12)";
+          el.style.background = "rgba(255,255,255,0.04)";
+          el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+          el.style.transform = "translateY(0)";
         }}
         style={{
           position: "absolute",
-          top: "clamp(12px, 2vh, 20px)",
-          right: "clamp(12px, 2vw, 24px)",
+          top: "clamp(16px, 2.5vh, 28px)",
+          right: "clamp(16px, 2.5vw, 32px)",
           zIndex: 10,
-          padding: "6px 16px",
+          padding: "10px 28px",
           fontFamily: THEME.fonts.heading,
-          fontSize: 10,
-          fontWeight: 600,
-          letterSpacing: 3,
+          fontSize: 14,
+          fontWeight: 700,
+          letterSpacing: 4,
           textTransform: "uppercase",
-          border: "1px solid rgba(255,255,255,0.06)",
-          borderRadius: 4,
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: 6,
           cursor: "pointer",
-          background: "rgba(255,255,255,0.02)",
-          color: THEME.colors.textMuted,
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          transition: "all 0.25s ease",
+          background: "rgba(255,255,255,0.04)",
+          color: "rgba(255,255,255,0.55)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+          transition: "all 0.3s ease",
         }}
       >
         SKIP
